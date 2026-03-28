@@ -1,0 +1,8 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PrivacyPage from '@/components/pages/PrivacyPage';
+import { PRIVACY_SEO } from '@/lib/seoData';
+---
+<BaseLayout title={PRIVACY_SEO.title} description={PRIVACY_SEO.description} canonical="/privacy" noindex={PRIVACY_SEO.noindex}>
+  <PrivacyPage />
+</BaseLayout>

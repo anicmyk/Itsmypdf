@@ -1,0 +1,12 @@
+---
+import ToolLayout from '@/layouts/ToolLayout.astro';
+import PngToPdfTool from '@/components/pdf/PngToPdfTool';
+import { ALL_TOOLS_SEO } from '@/lib/seoData';
+import { getOgImagePath } from '@/lib/ogImages';
+
+const toolId = 'png-to-pdf';
+const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+---
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/png-to-pdf'} ogImage={getOgImagePath(toolId)}>
+  <PngToPdfTool client:only="react" />
+</ToolLayout>

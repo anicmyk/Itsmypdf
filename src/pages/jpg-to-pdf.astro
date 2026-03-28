@@ -1,0 +1,12 @@
+---
+import ToolLayout from '@/layouts/ToolLayout.astro';
+import JpgToPdfTool from '@/components/pdf/jpg-to-pdf/JpgToPdfTool';
+import { ALL_TOOLS_SEO } from '@/lib/seoData';
+import { getOgImagePath } from '@/lib/ogImages';
+
+const toolId = 'jpg-to-pdf';
+const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+---
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/jpg-to-pdf'} ogImage={getOgImagePath(toolId)}>
+  <JpgToPdfTool client:only="react" />
+</ToolLayout>

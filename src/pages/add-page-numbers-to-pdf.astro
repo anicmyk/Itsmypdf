@@ -1,0 +1,12 @@
+---
+import ToolLayout from '@/layouts/ToolLayout.astro';
+import PageNumbersPDFTool from '@/components/pdf/page-numbers/PageNumbersPDFTool';
+import { ALL_TOOLS_SEO } from '@/lib/seoData';
+import { getOgImagePath } from '@/lib/ogImages';
+
+const toolId = 'add-page-numbers-to-pdf';
+const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+---
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/add-page-numbers-to-pdf'} ogImage={getOgImagePath(toolId)}>
+  <PageNumbersPDFTool client:only="react" />
+</ToolLayout>

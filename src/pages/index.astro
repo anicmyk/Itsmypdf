@@ -1,0 +1,8 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomePage from '@/components/pages/HomePage';
+import { HOMEPAGE_SEO } from '@/lib/seoData';
+---
+<BaseLayout title={HOMEPAGE_SEO.title} description={HOMEPAGE_SEO.description} canonical="/">
+  <HomePage client:load />
+</BaseLayout>

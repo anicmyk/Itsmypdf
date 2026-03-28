@@ -1,0 +1,12 @@
+---
+import ToolLayout from '@/layouts/ToolLayout.astro';
+import CompressPDFTool from '@/components/pdf/compress/CompressPDFTool';
+import { ALL_TOOLS_SEO } from '@/lib/seoData';
+import { getOgImagePath } from '@/lib/ogImages';
+
+const toolId = 'compress-pdf';
+const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+---
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/compress-pdf'} ogImage={getOgImagePath(toolId)}>
+  <CompressPDFTool client:only="react" />
+</ToolLayout>

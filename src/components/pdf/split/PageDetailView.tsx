@@ -1,0 +1,1 @@
+export { PagePreviewModal as PageDetailView } from '../shared/PagePreviewModal';

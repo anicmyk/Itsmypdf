@@ -1,0 +1,8 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import TermsPage from '@/components/pages/TermsPage';
+import { TERMS_SEO } from '@/lib/seoData';
+---
+<BaseLayout title={TERMS_SEO.title} description={TERMS_SEO.description} canonical="/terms" noindex={TERMS_SEO.noindex}>
+  <TermsPage />
+</BaseLayout>

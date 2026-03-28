@@ -1,0 +1,12 @@
+---
+import ToolLayout from '@/layouts/ToolLayout.astro';
+import WorkingSplitPDFTool from '@/components/pdf/split/WorkingSplitPDFTool';
+import { ALL_TOOLS_SEO } from '@/lib/seoData';
+import { getOgImagePath } from '@/lib/ogImages';
+
+const toolId = 'split-pdf';
+const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+---
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/split-pdf'} ogImage={getOgImagePath(toolId)}>
+  <WorkingSplitPDFTool client:only="react" />
+</ToolLayout>
