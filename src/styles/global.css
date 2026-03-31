@@ -223,6 +223,17 @@ img {
   position: fixed;
 }
 
+/* Ensure tool content fills full height (Astro islands are display: contents) */
+.tool-layout .tool-slot {
+  height: 100%;
+  min-height: 0;
+}
+
+.tool-layout .tool-slot > * {
+  height: 100%;
+  width: 100%;
+}
+
 /* Custom utilities */
 .line-clamp-2 {
   display: -webkit-box;
