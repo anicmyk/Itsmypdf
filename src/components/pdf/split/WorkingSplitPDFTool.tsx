@@ -15,7 +15,8 @@ import { SplitToolLayout } from './SplitToolLayout';
 // Set up PDF.js with the WORKING worker configuration
 // Set up PDF.js with the WORKING worker configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
-const WorkingSplitPDFTool: React.FC = () => {  const fileInputRef = useRef<HTMLInputElement>(null);
+const WorkingSplitPDFTool: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // State management
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -54,9 +55,17 @@ const WorkingSplitPDFTool: React.FC = () => {  const fileInputRef = useRef<HTMLI
   const [estimatedFiles, setEstimatedFiles] = useState<number>(0);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hash === '#extract') {
-      setCurrentTab('pages');
-    }
+    if (typeof window === 'undefined') return;
+
+    const syncTabWithHash = () => {
+      if (window.location.hash === '#extract') {
+        setCurrentTab('pages');
+      }
+    };
+
+    syncTabWithHash();
+    window.addEventListener('hashchange', syncTabWithHash);
+    return () => window.removeEventListener('hashchange', syncTabWithHash);
   }, []);
 
   // State for cleanup
@@ -617,7 +626,7 @@ const WorkingSplitPDFTool: React.FC = () => {  const fileInputRef = useRef<HTMLI
       prev = page;
     });
 
-    if (start !== null && prev !== null) {
+    if (start !== null) {
       if (start === prev) {
         ranges.push(String(start));
       } else {
