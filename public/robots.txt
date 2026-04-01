@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://itsmypdf.com/sitemap.xml
+Sitemap: https://itsmypdf.com/sitemap-index.xml

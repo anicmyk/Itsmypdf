@@ -10,13 +10,14 @@ interface Props {
   canonical?: string;
   noindex?: boolean;
   ogImage?: string;
+  ogType?: 'website' | 'article';
 }
 
-const { title, description = 'Free privacy-first PDF tools.', canonical, noindex = false, ogImage = '/og-image.jpg' } = Astro.props;
+const { title, description = 'Free privacy-first PDF tools.', canonical, noindex = false, ogImage = '/og-image.jpg', ogType = 'website' } = Astro.props;
 ---
 <html lang="en">
   <head>
-    <SeoHead title={title} description={description} canonical={canonical} noindex={noindex} ogImage={ogImage} />
+    <SeoHead title={title} description={description} canonical={canonical} noindex={noindex} ogImage={ogImage} ogType={ogType} />
   </head>
   <body class="text-gray-900 tool-layout">
     <div class="flex flex-col bg-gray-50 h-screen overflow-hidden">

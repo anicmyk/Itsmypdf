@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import ExcelToPdfTool from '@/components/pdf/excel-to-pdf/ExcelToPdfTool';
+import ToolShell from '@/components/ToolShell.astro';
 import { ALL_TOOLS_SEO } from '@/lib/seoData';
 import { getOgImagePath } from '@/lib/ogImages';
 
@@ -8,5 +9,7 @@ const toolId = 'excel-to-pdf';
 const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
 ---
 <ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/excel-to-pdf'} ogImage={getOgImagePath(toolId)}>
-  <ExcelToPdfTool client:only="react" />
+  <ExcelToPdfTool client:only="react">
+    <ToolShell slot="fallback" title={seo?.h1 ?? seo?.title ?? 'PDF Tool'} description={seo?.description ?? 'PDF tool'} />
+  </ExcelToPdfTool>
 </ToolLayout>

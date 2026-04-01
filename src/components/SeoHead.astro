@@ -5,22 +5,60 @@ interface Props {
   canonical?: string;
   noindex?: boolean;
   ogImage?: string;
+  ogType?: 'website' | 'article';
 }
 
-const { title, description = '', canonical, noindex = false, ogImage = '/og-image.jpg' } = Astro.props;
+const { title, description = '', canonical, noindex = false, ogImage = '/og-image.jpg', ogType = 'website' } = Astro.props;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonicalUrl = canonical ? new URL(canonical, site) : new URL(Astro.url.pathname, site);
+const ogImageUrl = ogImage ? new URL(ogImage, site) : undefined;
+const sitemapUrl = new URL('/sitemap-index.xml', site).href;
+const structuredData = JSON.stringify([
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${new URL('/', site).href}#organization`,
+    name: 'Itsmypdf',
+    alternateName: 'itsmypdf',
+    url: new URL('/', site).href,
+    logo: new URL('/icon-512.png', site).href
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${new URL('/', site).href}#website`,
+    name: 'Itsmypdf',
+    alternateName: 'itsmypdf',
+    url: new URL('/', site).href,
+    publisher: { '@id': `${new URL('/', site).href}#organization` }
+  }
+]);
 ---
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
 <title>{title}</title>
 <meta name="description" content={description} />
-{canonical && <link rel="canonical" href={canonical} />}
-{noindex && <meta name="robots" content="noindex,nofollow" />}
-<meta property="og:type" content="website" />
+<link rel="canonical" href={canonicalUrl.href} />
+{noindex && <meta name="robots" content="noindex,follow" />}
+<link rel="sitemap" type="application/xml" href={sitemapUrl} />
+<link rel="icon" type="image/svg+xml" href="/itsmypdf.svg" sizes="any" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content="Itsmypdf" />
+<meta property="og:url" content={canonicalUrl.href} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={ogImage} />
+{ogImageUrl && <meta property="og:image" content={ogImageUrl.href} />}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={ogImage} />
+{ogImageUrl && <meta name="twitter:image" content={ogImageUrl.href} />}
+<script type="application/ld+json" set:html={structuredData} />
