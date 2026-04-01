@@ -9,6 +9,8 @@ interface PdfUploadHeroProps {
     accept?: string;
     multiple?: boolean;
     icon?: React.ReactNode;
+    buttonLabel?: string;
+    dropLabel?: string;
 }
 
 export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
@@ -17,7 +19,9 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
     description = "Drag and drop your PDF files here or click to select.",
     accept = "application/pdf",
     multiple = true,
-    icon
+    icon,
+    buttonLabel,
+    dropLabel
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -140,7 +144,7 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
                         className="bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center"
                     >
                         <Plus className="h-6 w-6 mr-3" />
-                        {multiple ? 'Select PDF Files' : 'Select PDF File'}
+                        {buttonLabel ?? (multiple ? 'Select PDF Files' : 'Select PDF File')}
                     </button>
                     <input
                         type="file"
@@ -151,7 +155,7 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
                         multiple={multiple}
                     />
                 </div>
-                <p className="mt-4 text-gray-500">or drop {multiple ? 'PDFs' : 'PDF'} here</p>
+                <p className="mt-4 text-gray-500">{dropLabel ?? `or drop ${multiple ? 'PDFs' : 'PDF'} here`}</p>
 
                 {/* Bookmark and Share CTAs */}
                 <ToolCTAs variant="hero" />

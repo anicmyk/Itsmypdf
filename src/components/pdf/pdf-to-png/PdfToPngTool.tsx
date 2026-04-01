@@ -13,6 +13,9 @@ import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
+
+const hero = TOOL_HERO_UI['pdf-to-png'];
 
 const PdfToPngTool: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -187,8 +190,10 @@ const PdfToPngTool: React.FC = () => {
                 onFilesSelect={(files) => {
                     if (files.length > 0) setActiveFile(files[0]);
                 }}
-                title="PDF to PNG"
-                description="Convert PDF pages to high-quality PNG images."
+                title={hero.title}
+                description={hero.description}
+                accept={hero.accept}
+                multiple={hero.multiple}
                 icon={<ImageIcon className="h-6 w-6 mr-3" />}
             />
         );

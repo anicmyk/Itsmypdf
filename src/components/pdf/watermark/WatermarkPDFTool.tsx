@@ -9,6 +9,7 @@ import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 import {
   Plus, X, ArrowRight, Type, Image as ImageIcon, Bold, Italic, Underline,
@@ -21,6 +22,8 @@ import { toast } from 'sonner';
 if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
+
+const hero = TOOL_HERO_UI['watermark-pdf'];
 
 // From types.ts
 export type WatermarkType = 'text' | 'image';
@@ -2738,8 +2741,10 @@ const WatermarkTool: React.FC = () => {
       <div className="flex flex-col h-full bg-gray-50 font-sans">
         <PdfUploadHero
           onFilesSelect={handleFilesSelect}
-          title="Add Watermark to PDF"
-          description="Protect your documents by adding text or image watermarks."
+          title={hero.title}
+          description={hero.description}
+          accept={hero.accept}
+          multiple={hero.multiple}
           icon={<Type className="h-6 w-6 mr-3" />}
         />
       </div>

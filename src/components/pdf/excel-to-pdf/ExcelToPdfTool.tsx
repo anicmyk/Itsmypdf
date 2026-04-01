@@ -25,6 +25,7 @@ import { ToolCTAs } from '@/components/pdf/shared/ToolCTAs';
 import { PdfPageCard } from '@/components/pdf/shared/PdfPageCard';
 import { LoadingSpinner } from '@/components/pdf/shared/LoadingSpinner';
 import { MobileLayout } from '@/components/pdf/shared/MobileLayout';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
@@ -59,6 +60,8 @@ const getColumnLetter = (index: number): string => {
 };
 
 // Upload Hero Component
+const excelHero = TOOL_HERO_UI['excel-to-pdf'];
+
 const ExcelUploadHero: React.FC<{
     onFileSelect: (file: File) => void;
 }> = ({ onFileSelect }) => {
@@ -166,9 +169,9 @@ const ExcelUploadHero: React.FC<{
             )}
 
             <div className="text-center">
-                <h1 className="text-5xl font-bold text-gray-800">Excel to PDF</h1>
+                <h1 className="text-5xl font-bold text-gray-800">{excelHero.title}</h1>
                 <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-                    Convert your Excel spreadsheets to PDF with smart formatting, auto-orientation, and professional styling.
+                    {excelHero.description}
                 </p>
                 <div className="mt-10">
                     <button
@@ -176,17 +179,17 @@ const ExcelUploadHero: React.FC<{
                         className="bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center"
                     >
                         <Plus className="h-6 w-6 mr-3" />
-                        Select Excel File
+                        {excelHero.buttonLabel ?? 'Select Excel File'}
                     </button>
                     <input
                         type="file"
                         ref={fileInputRef}
                         onChange={handleFileChange}
                         className="hidden"
-                        accept=".xlsx,.xls,.csv"
+                        accept={excelHero.accept ?? '.xlsx,.xls,.csv'}
                     />
                 </div>
-                <p className="mt-4 text-gray-500">or drop Excel file here</p>
+                <p className="mt-4 text-gray-500">{excelHero.dropLabel ?? 'or drop Excel file here'}</p>
                 <ToolCTAs variant="hero" />
             </div>
         </div>

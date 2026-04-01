@@ -5,9 +5,12 @@ import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
 import { PdfPageCard } from '@/components/pdf/shared/PdfPageCard';
 import { ToolCTAs } from '@/components/pdf/shared/ToolCTAs';
 import { MobileLayout } from '@/components/pdf/shared/MobileLayout';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js with the WORKING worker configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+
+const hero = TOOL_HERO_UI['merge-pdf'];
 
 interface PDFFile {
   id: string;
@@ -473,8 +476,10 @@ const MergePDFTool: React.FC = () => {
           <div className="flex-grow flex items-center justify-center p-4 md:p-8">
             <PdfUploadHero
               onFilesSelect={handleFileSelect}
-              title="Merge PDF file"
-              description="Combine multiple PDF files into a single document."
+              title={hero.title}
+              description={hero.description}
+              accept={hero.accept}
+              multiple={hero.multiple}
               icon={<Plus className="h-6 w-6 mr-3" />}
             />
           </div>

@@ -5,6 +5,7 @@ import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { ToolCTAs } from '../shared/ToolCTAs';
 import { MobileLayout } from '../shared/MobileLayout';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 interface ImageFile {
   id: string;
@@ -23,6 +24,8 @@ const PAGE_SIZES: Record<PageSize, { width: number; height: number; label: strin
   A3: { width: 842, height: 1191, label: 'A3 (297x420 mm)' },
   A5: { width: 420, height: 595, label: 'A5 (210x148 mm)' },
 };
+
+const hero = TOOL_HERO_UI['jpg-to-pdf'];
 
 const JpgToPdfTool: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -408,9 +411,10 @@ const JpgToPdfTool: React.FC = () => {
         {imageFiles.length === 0 ? (
           <PdfUploadHero
             onFilesSelect={handleFileSelect}
-            title="JPG to PDF"
-            description="Convert your images to PDF files instantly. Drag and drop or select images to get started."
-            accept="image/jpeg,image/jpg,image/png"
+            title={hero.title}
+            description={hero.description}
+            accept={hero.accept}
+            multiple={hero.multiple}
             icon={<ImageIcon className="h-6 w-6 mr-3" />}
           />
         ) : (

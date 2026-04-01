@@ -23,11 +23,14 @@ import { PdfPageCard } from '../shared/PdfPageCard';
 import { toast } from 'sonner';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
+
+const hero = TOOL_HERO_UI['crop-pdf'];
 
 // Crop Presets - Industry standard crop options
 const CROP_PRESETS = [
@@ -338,8 +341,10 @@ const CropPDFTool: React.FC = () => {
                 onFilesSelect={(files) => {
                     if (files.length > 0) setActiveFile(files[0]);
                 }}
-                title="Crop PDF"
-                description="Remove margins, trim pages, and focus on what matters."
+                title={hero.title}
+                description={hero.description}
+                accept={hero.accept}
+                multiple={hero.multiple}
                 icon={<CropIcon className="h-6 w-6 mr-3" />}
             />
         );

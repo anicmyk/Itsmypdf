@@ -1,7 +1,20 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import BlogPage from '@/components/pages/BlogPage';
+import BlogFilters from '@/components/blog/BlogFilters';
 ---
 <BaseLayout title="itsmypdf Blog - Privacy-First PDF Guides" description="Practical guides on private, browser-based PDF workflows." canonical="/blog">
-  <BlogPage client:load />
+  <div class="min-h-screen bg-white">
+    <div class="bg-gray-50 border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 text-center">
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+          itsmy<span class="text-blue-600">pdf</span> Blog
+        </h1>
+        <p class="text-gray-600 text-base sm:text-lg max-w-lg mx-auto">
+          Guides and tips for working with PDFs &mdash; privately and without uploads.
+        </p>
+      </div>
+    </div>
+
+    <BlogFilters client:load />
+  </div>
 </BaseLayout>

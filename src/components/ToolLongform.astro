@@ -1,0 +1,57 @@
+---
+import { TOOL_LONGFORM } from '@/lib/toolLongform';
+
+interface Props {
+  toolId?: string;
+}
+
+const { toolId } = Astro.props;
+const content = toolId ? TOOL_LONGFORM[toolId] : undefined;
+---
+{content && (
+  <div class="w-full bg-white border-t border-gray-200 flex-shrink-0">
+    <div class="max-w-3xl mx-auto px-6 py-16 text-gray-800">
+      <h2 class="text-3xl font-bold mb-6 text-brand-blue-800">{content.howTo.title}</h2>
+      <p class="mb-4 text-lg text-gray-700">{content.howTo.intro}</p>
+      <ol class="list-decimal pl-6 mb-12 space-y-3 text-gray-700">
+        {content.howTo.steps.map((step) => (
+          <li>
+            <span set:html={step} />
+          </li>
+        ))}
+      </ol>
+
+      <h2 class="text-3xl font-bold mb-6 text-brand-blue-800">{content.why.title}</h2>
+      <ul class="list-disc pl-6 mb-12 space-y-3 text-gray-700">
+        {content.why.bullets.map((bullet) => (
+          <li>
+            <span set:html={bullet} />
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="text-3xl font-bold mb-6 text-brand-blue-800">Frequently Asked Questions</h2>
+      {content.faq.map((item) => (
+        <div class="mb-8">
+          <h3 class="text-xl font-bold mb-2 text-gray-900">{item.question}</h3>
+          <p class="text-gray-700">{item.answer}</p>
+        </div>
+      ))}
+
+      <div class="pt-8 mt-12 border-t border-gray-200">
+        <h2 class="text-2xl font-bold mb-6 text-brand-blue-800 text-center">{content.related.title}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          {content.related.items.map((item) => (
+            <a
+              href={item.href}
+              class="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100"
+            >
+              <p class="font-semibold text-gray-800 mb-1">{item.title}</p>
+              <span class="text-sm text-brand-blue-600 font-medium" set:html={item.cta} />
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)}

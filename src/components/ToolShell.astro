@@ -1,14 +1,37 @@
 ---
+import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
+import ToolLongform from '@/components/ToolLongform.astro';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
+
 interface Props {
-  title: string;
+  title?: string;
   description?: string;
+  toolId?: string;
+  accept?: string;
+  multiple?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, toolId, accept, multiple } = Astro.props;
+const hero = toolId ? TOOL_HERO_UI[toolId] : undefined;
+const resolvedTitle = hero?.title ?? title ?? 'PDF Tool';
+const resolvedDescription = hero?.description ?? description;
+const resolvedAccept = hero?.accept ?? accept;
+const resolvedMultiple = hero?.multiple ?? multiple;
+const resolvedButtonLabel = hero?.buttonLabel;
+const resolvedDropLabel = hero?.dropLabel;
+const noop = () => {};
 ---
-<section class="bg-white border-b border-gray-200">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>
-    {description && <p class="mt-2 text-base text-gray-600 max-w-3xl">{description}</p>}
+<div class="flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-auto">
+  <div class="flex flex-col justify-center items-center w-full min-h-[65vh] sm:min-h-[70vh] flex-shrink-0">
+    <PdfUploadHero
+      onFilesSelect={noop}
+      title={resolvedTitle}
+      description={resolvedDescription}
+      accept={resolvedAccept}
+      multiple={resolvedMultiple}
+      buttonLabel={resolvedButtonLabel}
+      dropLabel={resolvedDropLabel}
+    />
   </div>
-</section>
+  <ToolLongform toolId={toolId} />
+</div>

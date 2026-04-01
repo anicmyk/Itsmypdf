@@ -7,6 +7,7 @@ import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
 import { toast } from 'sonner';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 import {
     Palette,
     ArrowRight,
@@ -25,6 +26,8 @@ import {
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
+
+const hero = TOOL_HERO_UI['add-background-to-pdf'];
 
 // Background Type
 // Background Type (UI Mode)
@@ -816,8 +819,10 @@ const AddBackgroundTool: React.FC = () => {
                 onFilesSelect={(files) => {
                     if (files.length > 0) setActiveFile(files[0]);
                 }}
-                title="Add Background to PDF"
-                description="Add professional background colors or images to your PDF documents."
+                title={hero.title}
+                description={hero.description}
+                accept={hero.accept}
+                multiple={hero.multiple}
                 icon={<Palette className="h-6 w-6 mr-3" />}
             />
         );

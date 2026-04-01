@@ -10,6 +10,8 @@ const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
 ---
 <ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/add-background-to-pdf'} ogImage={getOgImagePath(toolId)}>
   <AddBackgroundTool client:only="react">
-    <ToolShell slot="fallback" title={seo?.h1 ?? seo?.title ?? 'PDF Tool'} description={seo?.description ?? 'PDF tool'} />
+    <ToolShell slot="fallback" toolId={toolId} />
   </AddBackgroundTool>
 </ToolLayout>
+
+

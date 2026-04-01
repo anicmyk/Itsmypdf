@@ -6,6 +6,7 @@ import { PagePreviewModal } from '../shared/PagePreviewModal';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 import {
     Plus, X, ArrowRight, Settings, ChevronDown, Check, Trash2, CornerLeftUp
@@ -1241,6 +1242,8 @@ interface PageNumberUploadHeroProps {
     onFilesSelect: (files: FileList) => void;
 }
 
+const pageNumberHero = TOOL_HERO_UI['add-page-numbers-to-pdf'];
+
 const PageNumberUploadHero: React.FC<PageNumberUploadHeroProps> = ({ onFilesSelect }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -1299,9 +1302,9 @@ const PageNumberUploadHero: React.FC<PageNumberUploadHeroProps> = ({ onFilesSele
                 className={`text-center transition-transform duration-300 ${isDragging ? 'scale-105' : ''}`}
             >
                 <div className={`p-10 rounded-xl ${isDragging ? 'bg-brand-blue-50 ring-4 ring-brand-blue-200' : ''}`}>
-                    <h1 className="text-5xl font-bold text-gray-800">Add Page Numbers to PDF</h1>
+                    <h1 className="text-5xl font-bold text-gray-800">{pageNumberHero.title}</h1>
                     <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-                        Automatically add page numbers to all pages of your PDF documents.
+                        {pageNumberHero.description}
                     </p>
                     <div className="mt-10">
                         <button
@@ -1310,18 +1313,18 @@ const PageNumberUploadHero: React.FC<PageNumberUploadHeroProps> = ({ onFilesSele
                             aria-label="Select PDF file to add page numbers"
                         >
                             <Plus className="h-6 w-6 mr-3" />
-                            Select PDF files
+                            {pageNumberHero.buttonLabel ?? 'Select PDF files'}
                         </button>
                         <input
                             type="file"
                             ref={fileInputRef}
                             onChange={handleFileChange}
                             className="hidden"
-                            accept="application/pdf"
+                            accept={pageNumberHero.accept ?? 'application/pdf'}
                             multiple
                         />
                     </div>
-                    <p className="mt-4 text-gray-500">or drop PDFs here</p>
+                    <p className="mt-4 text-gray-500">{pageNumberHero.dropLabel ?? 'or drop PDFs here'}</p>
                 </div>
             </div>
         </div>

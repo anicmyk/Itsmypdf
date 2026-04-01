@@ -6,12 +6,16 @@ import { LoadingSpinner } from '@/components/pdf/shared/LoadingSpinner';
 import { MobileLayout } from '@/components/pdf/shared/MobileLayout';
 import { ToolCTAs } from '@/components/pdf/shared/ToolCTAs';
 import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
+import ToolLongformReact from '@/components/pdf/shared/ToolLongformReact';
 import { PdfPageCard } from '../shared/PdfPageCard';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
+
+const hero = TOOL_HERO_UI['organize-pdf'];
 
 // --- TYPES ---
 interface Page {
@@ -682,68 +686,15 @@ const OrganizeTool: React.FC = () => {
                 <div className="flex flex-col justify-center items-center w-full min-h-[65vh] sm:min-h-[70vh] flex-shrink-0">
                     <PdfUploadHero
                         onFilesSelect={handleFilesSelect}
-                        title="Organize, Rearrange & Reorder PDF Pages for Free"
-                        description="Easily move, add, sort, and arrange your document directly in your browser. No sign-ups, no watermarks, and completely free."
+                        title={hero.title}
+                        description={hero.description}
+                        accept={hero.accept}
+                        multiple={hero.multiple}
                         icon={<PlusIcon className="h-6 w-6 mr-3" />}
                     />
                 </div>
 
-                {/* SEO Intent Section */}
-                <div className="w-full bg-white border-t border-gray-200 flex-shrink-0">
-                    <div className="max-w-3xl mx-auto px-6 py-16 text-gray-800">
-                        <h2 className="text-3xl font-bold mb-6 text-brand-blue-800">How to Rearrange and Organize a PDF</h2>
-                        <p className="mb-4 text-lg text-gray-700">Move, add, or reorder pages in three simple steps:</p>
-                        <ol className="list-decimal pl-6 mb-12 space-y-3 text-gray-700">
-                            <li><strong>Select your file:</strong> Choose the document from your device using the button above. The file stays on your device.</li>
-                            <li><strong>Rearrange and organize:</strong> Drag and drop the page thumbnails to move them into the perfect order. You can also add new pages or delete unwanted ones.</li>
-                            <li><strong>Save your file:</strong> Click 'Organize PDF' to instantly export your updated, watermark-free PDF directly to your device.</li>
-                        </ol>
-
-                        <h2 className="text-3xl font-bold mb-6 text-brand-blue-800">Why Use itsmypdf to Organize Pages?</h2>
-                        <ul className="list-disc pl-6 mb-12 space-y-3 text-gray-700">
-                            <li><strong>100% Private (No Uploads):</strong> Your files are processed entirely inside your web browser using client-side technology. We never upload, store, or see your sensitive documents.</li>
-                            <li><strong>Drag and Drop Simplicity:</strong> Visually sort, add, and move PDF pages with a lightning-fast interface designed for speed.</li>
-                            <li><strong>No Watermarks:</strong> We never alter your document or add branding. Your exported PDF looks exactly how you organized it.</li>
-                            <li><strong>No Account Required:</strong> Skip the registration process entirely. Start working immediately—just open your file, arrange it, and save.</li>
-                        </ul>
-
-                        <h2 className="text-3xl font-bold mb-6 text-brand-blue-800">Frequently Asked Questions</h2>
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">How do I move or add pages in a PDF?</h3>
-                            <p className="text-gray-700">Simply upload your file, click on the page thumbnail you want to move, and drag it to its new position. You can also use the menu to add extra pages seamlessly before saving.</p>
-                        </div>
-                        <div className="mb-8">
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Is there a file size limit?</h3>
-                            <p className="text-gray-700">There are no strict file size limits! Because our tool processes the document directly on your device, you can easily handle large PDF files. The processing speed simply depends on your device's available memory.</p>
-                        </div>
-                        <div className="mb-8">
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Is it safe to use itsmypdf for sensitive documents?</h3>
-                            <p className="text-gray-700">Absolutely. Since your files are processed entirely on your device, your sensitive data never leaves your browser. This makes it one of the most secure ways to manage private PDF documents.</p>
-                        </div>
-                        <div className="mb-8">
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Does this tool work on mobile devices?</h3>
-                            <p className="text-gray-700">Yes! itsmypdf is fully responsive. You can easily drag, drop, and rearrange PDF pages on your iPhone, Android, or tablet directly through your web browser.</p>
-                        </div>
-
-                        <div className="pt-8 mt-12 border-t border-gray-200">
-                            <h2 className="text-2xl font-bold mb-6 text-brand-blue-800 text-center">Related Tools</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                                <a href="/remove-pages" className="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100">
-                                    <p className="font-semibold text-gray-800 mb-1">Need to delete pages?</p>
-                                    <span className="text-sm text-brand-blue-600 font-medium">Remove PDF Pages &rarr;</span>
-                                </a>
-                                <a href="/merge-pdf" className="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100">
-                                    <p className="font-semibold text-gray-800 mb-1">Need to combine files?</p>
-                                    <span className="text-sm text-brand-blue-600 font-medium">Merge PDF &rarr;</span>
-                                </a>
-                                <a href="/compress-pdf" className="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100">
-                                    <p className="font-semibold text-gray-800 mb-1">File too large?</p>
-                                    <span className="text-sm text-brand-blue-600 font-medium">Compress PDF &rarr;</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ToolLongformReact toolId="organize-pdf" />
             </div>
 
             <div className={`flex flex-col h-full bg-gray-50 overflow-hidden font-sans ${files.length === 0 ? 'hidden' : ''}`}>

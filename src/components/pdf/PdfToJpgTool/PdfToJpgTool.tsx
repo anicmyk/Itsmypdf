@@ -13,6 +13,9 @@ import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
+
+const hero = TOOL_HERO_UI['pdf-to-jpg'];
 
 const PdfToJpgTool: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -188,8 +191,10 @@ const PdfToJpgTool: React.FC = () => {
                 onFilesSelect={(files) => {
                     if (files.length > 0) setActiveFile(files[0]);
                 }}
-                title="PDF to JPG"
-                description="Convert PDF pages to high-quality JPG images."
+                title={hero.title}
+                description={hero.description}
+                accept={hero.accept}
+                multiple={hero.multiple}
                 icon={<ImageIcon className="h-6 w-6 mr-3" />}
             />
         );

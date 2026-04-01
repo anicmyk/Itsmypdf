@@ -17,9 +17,12 @@ import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js worker with the "fast" CDN config
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+
+const hero = TOOL_HERO_UI['rotate-pdf'];
 
 // --- TYPES ---
 interface Page {
@@ -314,8 +317,10 @@ const RotatePDFTool: React.FC = () => {
       <div className="flex flex-col h-full bg-gray-50 font-sans">
         <PdfUploadHero
           onFilesSelect={handleFilesSelect}
-          title="Rotate PDF Pages"
-          description="Simply click on a page to rotate it or use the controls to rotate all."
+          title={hero.title}
+          description={hero.description}
+          accept={hero.accept}
+          multiple={hero.multiple}
           icon={<Plus className="h-6 w-6 mr-3" />}
         />
       </div>

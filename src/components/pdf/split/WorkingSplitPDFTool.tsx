@@ -11,10 +11,13 @@ import { PageDetailView } from './PageDetailView';
 
 import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
 import { SplitToolLayout } from './SplitToolLayout';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js with the WORKING worker configuration
 // Set up PDF.js with the WORKING worker configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
+const hero = TOOL_HERO_UI['split-pdf'];
+
 const WorkingSplitPDFTool: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1340,10 +1343,11 @@ const WorkingSplitPDFTool: React.FC = () => {
             onFilesSelect={(files) => {
               if (files.length > 0) handleFileSelect(files[0]);
             }}
-            title="Split PDF"
-            description="Split PDF pages into multiple files"
+            title={hero.title}
+            description={hero.description}
+            accept={hero.accept}
+            multiple={hero.multiple}
             icon={<Grid className="h-6 w-6 mr-3" />}
-            multiple={false}
           />
         ) : (
           <>

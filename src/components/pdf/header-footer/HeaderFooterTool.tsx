@@ -7,6 +7,7 @@ import { PdfPageCard } from '../shared/PdfPageCard';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 import {
     Plus, ArrowRight, Type, Bold, Italic, Underline,
@@ -19,6 +20,8 @@ import { toast } from 'sonner';
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
+
+const hero = TOOL_HERO_UI['add-header-footer-to-pdf'];
 
 // Types - matching watermark structure
 export type HeaderFooterPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
@@ -864,7 +867,14 @@ const HeaderFooterTool: React.FC = () => {
     if (files.length === 0) {
         return (
             <div className="flex flex-col h-full bg-gray-50 font-sans">
-                <PdfUploadHero onFilesSelect={handleFilesSelect} title="Add Header & Footer to PDF" description="Add professional headers and footers with page numbers, dates, and custom text." icon={<PanelTop className="h-6 w-6 mr-3" />} />
+                <PdfUploadHero
+                    onFilesSelect={handleFilesSelect}
+                    title={hero.title}
+                    description={hero.description}
+                    accept={hero.accept}
+                    multiple={hero.multiple}
+                    icon={<PanelTop className="h-6 w-6 mr-3" />}
+                />
             </div>
         );
     }

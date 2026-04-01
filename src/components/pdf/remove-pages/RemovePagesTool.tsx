@@ -7,6 +7,8 @@ import { PdfPageCard } from '../shared/PdfPageCard';
 import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import ToolLongformReact from '../shared/ToolLongformReact';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js
 if (typeof window !== 'undefined') {
@@ -14,6 +16,7 @@ if (typeof window !== 'undefined') {
   // pdfjsLib.GlobalWorkerOptions.workerSrc = ...
 }
 
+const hero = TOOL_HERO_UI['remove-pages'];
 
 
 const RemovePagesTool: React.FC = () => {
@@ -221,68 +224,14 @@ const RemovePagesTool: React.FC = () => {
                 setActiveFile(files[0]);
               }
             }}
-            title="Delete & Remove PDF Pages Online for Free"
-            description="Securely delete unwanted pages from your document directly in your browser. No sign-ups, no watermarks, and completely free."
-            multiple={false}
+            title={hero.title}
+            description={hero.description}
+            accept={hero.accept}
+            multiple={hero.multiple}
           />
         </div>
 
-        {/* SEO Intent Section */}
-        <div className="w-full bg-white border-t border-gray-200 flex-shrink-0">
-          <div className="max-w-3xl mx-auto px-6 py-16 text-gray-800">
-            <h2 className="text-3xl font-bold mb-6 text-brand-blue-800">How to Delete Pages from a PDF</h2>
-            <p className="mb-4 text-lg text-gray-700">Remove one page or multiple sections in three simple steps:</p>
-            <ol className="list-decimal pl-6 mb-12 space-y-3 text-gray-700">
-              <li><strong>Select your file:</strong> Choose the document from your device using the button above. The file stays on your device.</li>
-              <li><strong>Choose pages to delete:</strong> Click on the specific pages you want to remove. Hold 'Shift' to select a bulk range.</li>
-              <li><strong>Save your file:</strong> Click 'Remove Pages' to instantly export your updated, watermark-free PDF directly to your device.</li>
-            </ol>
-
-            <h2 className="text-3xl font-bold mb-6 text-brand-blue-800">Why Use itsmypdf to Remove Pages?</h2>
-            <ul className="list-disc pl-6 mb-12 space-y-3 text-gray-700">
-              <li><strong>100% Private (No Uploads):</strong> Your files are processed entirely inside your web browser using client-side technology. We never upload, store, or see your sensitive documents.</li>
-              <li><strong>No Watermarks:</strong> We never alter your document or add branding. Your exported PDF looks exactly how you want it.</li>
-              <li><strong>No Account Required:</strong> Skip the registration process entirely. Start working immediately, just open your file, edit, and save.</li>
-              <li><strong>Completely Free:</strong> No hidden paywalls or premium subscriptions after you've already done the work.</li>
-            </ul>
-
-            <h2 className="text-3xl font-bold mb-6 text-brand-blue-800">Frequently Asked Questions</h2>
-            <div className="mb-6">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Can I remove multiple pages at once?</h3>
-              <p className="text-gray-700">Yes! Our online PDF page remover allows you to select as many individual pages or page ranges as you need to delete before saving the new file.</p>
-            </div>
-            <div className="mb-8">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Is there a file size limit?</h3>
-              <p className="text-gray-700">There are no strict file size limits! Because our tool processes the document directly on your device, you can easily handle large PDF files. The processing speed simply depends on your device's available memory.</p>
-            </div>
-            <div className="mb-8">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Is it safe to use itsmypdf for sensitive documents?</h3>
-              <p className="text-gray-700">Absolutely. Since your files are processed entirely on your device, your sensitive data never leaves your browser. This makes it one of the most secure ways to manage private PDF documents.</p>
-            </div>
-            <div className="mb-8">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Does this tool work on mobile devices?</h3>
-              <p className="text-gray-700">Yes! itsmypdf is fully responsive and works perfectly across all devices. You can securely remove PDF pages on your iPhone, Android, or tablet directly through your web browser.</p>
-            </div>
-            
-            <div className="pt-8 mt-12 border-t border-gray-200">
-              <h2 className="text-2xl font-bold mb-6 text-brand-blue-800 text-center">Related Tools</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                <a href="/merge-pdf" className="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100">
-                  <p className="font-semibold text-gray-800 mb-1">Need to combine files?</p>
-                  <span className="text-sm text-brand-blue-600 font-medium">Merge PDF &rarr;</span>
-                </a>
-                <a href="/organize-pdf" className="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100">
-                  <p className="font-semibold text-gray-800 mb-1">Need to change the order?</p>
-                  <span className="text-sm text-brand-blue-600 font-medium">Organize PDF &rarr;</span>
-                </a>
-                <a href="/compress-pdf" className="p-4 bg-gray-50 rounded-xl hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors duration-200 border border-gray-100 hover:border-brand-blue-100">
-                  <p className="font-semibold text-gray-800 mb-1">File too large?</p>
-                  <span className="text-sm text-brand-blue-600 font-medium">Compress PDF &rarr;</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ToolLongformReact toolId="remove-pages" />
       </div>
 
       <div className={`flex flex-col h-full bg-gray-50 overflow-hidden font-sans ${!activeFile ? 'hidden' : ''}`}>

@@ -5,8 +5,11 @@ import { Plus, ArrowRight, Settings } from 'lucide-react';
 import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
 import { PdfPageCard } from '@/components/pdf/shared/PdfPageCard';
 import { MobileLayout } from '@/components/pdf/shared/MobileLayout';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+
+const hero = TOOL_HERO_UI['ocr-pdf'];
 
 type OcrOptions = {
   language: string;
@@ -235,9 +238,10 @@ const OcrPDFTool: React.FC = () => {
               onFilesSelect={(files) => {
                 if (files && files.length > 0) setFile(files[0]);
               }}
-              title="OCR PDF"
-              description="Make scanned PDFs selectable and searchable."
-              multiple={false}
+              title={hero.title}
+              description={hero.description}
+              accept={hero.accept}
+              multiple={hero.multiple}
               icon={<Plus className="h-6 w-6 mr-3" />}
             />
           </div>

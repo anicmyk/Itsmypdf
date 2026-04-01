@@ -9,8 +9,11 @@ import { PagePreviewModal } from '@/components/pdf/shared/PagePreviewModal';
 import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
 import { PdfPageCard } from '@/components/pdf/shared/PdfPageCard';
 import { MobileLayout } from '@/components/pdf/shared/MobileLayout';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+
+const hero = TOOL_HERO_UI['multi-pdf'];
 
 type UploadedFile = {
   id: string;
@@ -347,8 +350,10 @@ const MultiPDFTool: React.FC = () => {
           <div className="flex-grow flex items-center justify-center p-8">
             <PdfUploadHero
               onFilesSelect={addFiles}
-              title="Multi PDF Tool"
-              description="Upload, reorder, rotate, split, and export – all in your browser."
+              title={hero.title}
+              description={hero.description}
+              accept={hero.accept}
+              multiple={hero.multiple}
               icon={<Plus className="h-6 w-6 mr-3" />}
             />
           </div>

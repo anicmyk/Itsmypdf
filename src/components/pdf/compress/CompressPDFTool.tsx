@@ -8,11 +8,14 @@ import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 
 // Set up PDF.js
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
+
+const hero = TOOL_HERO_UI['compress-pdf'];
 
 interface PDFFile {
     id: string;
@@ -183,8 +186,10 @@ const CompressPDFTool: React.FC = () => {
         return (
             <PdfUploadHero
                 onFilesSelect={handleFileSelect}
-                title="Compress PDF"
-                description="Reduce PDF file size while maintaining quality."
+                title={hero.title}
+                description={hero.description}
+                accept={hero.accept}
+                multiple={hero.multiple}
                 icon={<Zap className="h-6 w-6 mr-3" />}
             />
         );
