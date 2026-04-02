@@ -89,6 +89,12 @@ export const ALL_TOOLS_SEO = {
     keywords: 'pdf background, add background to pdf, change pdf background color',
     h1: 'Add Background to PDF'
   },
+  'edit-pdf': {
+    title: 'Edit PDF Online - Edit Text in PDF | itsmypdf',
+    description: 'Edit text in PDFs directly in your browser while preserving layout and styling where possible. Free, secure, client-side processing.',
+    keywords: 'edit pdf, edit pdf text, pdf editor, modify pdf text',
+    h1: 'Edit PDF Text Online'
+  },
   'add-header-footer-to-pdf': {
     title: 'Add Header & Footer to PDF - PDF Header/Footer Tool | itsmypdf',
     description: 'Add custom headers and footers to your PDF documents. Include page numbers, dates, or text. Free online tool.',

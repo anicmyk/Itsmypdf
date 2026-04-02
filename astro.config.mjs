@@ -14,4 +14,12 @@ export default defineConfig({
         page !== 'https://itsmypdf.com/terms/'
     })
   ],
+  vite: {
+    optimizeDeps: {
+      exclude: ['@embedpdf/pdfium']
+    },
+    worker: {
+      format: 'es'
+    }
+  }
 });

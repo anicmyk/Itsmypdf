@@ -20,6 +20,7 @@ const toolLoaders = {
   'add-page-numbers-to-pdf': () => import('@/components/pdf/page-numbers/PageNumbersPDFTool'),
   'crop-pdf': () => import('@/components/pdf/crop/CropPDFTool'),
   'add-background-to-pdf': () => import('@/components/pdf/add-background/AddBackgroundTool'),
+  'edit-pdf': () => import('@/components/pdf/edit/EditPdfTool'),
   'add-header-footer-to-pdf': () => import('@/components/pdf/header-footer/HeaderFooterTool'),
   'ocr-pdf': () => import('@/components/pdf/ocr/OcrPDFTool'),
   'multi-pdf': () => import('@/components/pdf/multi/MultiPDFTool'),

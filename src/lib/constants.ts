@@ -128,6 +128,14 @@ export const PDF_TOOLS = [
     multipleFiles: false
   },
   {
+    id: 'edit-pdf',
+    name: 'Edit PDF',
+    description: 'Edit PDF text in place',
+    icon: 'Type',
+    category: 'edit',
+    multipleFiles: false
+  },
+  {
     id: 'add-header-footer-to-pdf',
     name: 'Header & Footer',
     description: 'Add header and footer to PDF pages',

@@ -106,6 +106,12 @@ export const TOOL_HERO_UI: Record<string, ToolHeroUI> = {
     accept: 'application/pdf',
     multiple: true
   },
+  'edit-pdf': {
+    title: 'Edit PDF',
+    description: 'Edit text inside your PDF while preserving the original look as closely as possible.',
+    accept: 'application/pdf',
+    multiple: false
+  },
   'crop-pdf': {
     title: 'Crop PDF',
     description: 'Remove margins, trim pages, and focus on what matters.',

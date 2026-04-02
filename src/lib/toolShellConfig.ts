@@ -19,6 +19,7 @@ export const TOOL_SHELL_CONFIG: Record<string, ToolShellConfig> = {
   'watermark-pdf': { multiple: false, accept: 'application/pdf' },
   'add-page-numbers-to-pdf': { multiple: false, accept: 'application/pdf' },
   'add-background-to-pdf': { multiple: false, accept: 'application/pdf' },
+  'edit-pdf': { multiple: false, accept: 'application/pdf' },
   'add-header-footer-to-pdf': { multiple: false, accept: 'application/pdf' },
   'crop-pdf': { multiple: false, accept: 'application/pdf' },
   'excel-to-pdf': { multiple: false, accept: '.xlsx,.xls,.csv' }
