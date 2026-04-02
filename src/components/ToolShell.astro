@@ -22,7 +22,7 @@ const resolvedDropLabel = hero?.dropLabel;
 const noop = () => {};
 ---
 <div class="flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-auto">
-  <div class="flex flex-col justify-center items-center w-full min-h-[65vh] sm:min-h-[70vh] flex-shrink-0">
+  <div class="flex-grow flex items-center justify-center p-4 md:p-8">
     <PdfUploadHero
       onFilesSelect={noop}
       title={resolvedTitle}
