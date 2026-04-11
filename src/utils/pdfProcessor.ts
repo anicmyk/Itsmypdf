@@ -1,4 +1,10 @@
 import { PDFDocument, rgb, degrees, PDFName, PDFDict, PDFStream, PDFNumber } from 'pdf-lib';
+import {
+  analyzePdfCompression,
+  type CompressionLevel as PdfCompressionLevel,
+  type CompressionMode as PdfCompressionMode,
+  type PdfCompressionAnalysis
+} from './pdfCompressionAnalysis';
 
 export interface ProcessingResult {
   success: boolean;
@@ -12,6 +18,10 @@ interface PdfToJpgOptions {
   dpi: number;
   grayscale: boolean;
   isZip?: boolean;
+}
+
+function replacePdfExtension(fileName: string, suffix: string) {
+  return fileName.replace(/\.pdf$/i, `${suffix}.pdf`);
 }
 
 /**
@@ -583,22 +593,22 @@ interface CompressionConfig {
   };
 }
 
-const COMPRESSION_CONFIGS: Record<string, CompressionConfig> = {
-  recommended: {
-    vector: { quality: 0.5, maxDimensions: 1800, skipSizeKB: 3, replaceThreshold: 0.95 },
-    raster: { scale: 1.5, quality: 0.6 }
+const COMPRESSION_CONFIGS: Record<PdfCompressionLevel, CompressionConfig> = {
+  low: {
+    vector: { quality: 0.72, maxDimensions: 2200, skipSizeKB: 6, replaceThreshold: 0.985 },
+    raster: { scale: 1.8, quality: 0.8 }
   },
-  highQuality: {
-    vector: { quality: 0.7, maxDimensions: 2500, skipSizeKB: 5, replaceThreshold: 0.98 },
-    raster: { scale: 2.0, quality: 0.9 }
+  balanced: {
+    vector: { quality: 0.55, maxDimensions: 1800, skipSizeKB: 4, replaceThreshold: 0.95 },
+    raster: { scale: 1.4, quality: 0.62 }
   },
-  smallSize: {
-    vector: { quality: 0.3, maxDimensions: 1200, skipSizeKB: 2, replaceThreshold: 0.95 },
-    raster: { scale: 1.2, quality: 0.4 }
+  strong: {
+    vector: { quality: 0.35, maxDimensions: 1300, skipSizeKB: 2, replaceThreshold: 0.93 },
+    raster: { scale: 1.1, quality: 0.45 }
   },
-  extreme: {
-    vector: { quality: 0.1, maxDimensions: 1000, skipSizeKB: 1, replaceThreshold: 0.95 },
-    raster: { scale: 1.0, quality: 0.2 }
+  maximum: {
+    vector: { quality: 0.18, maxDimensions: 900, skipSizeKB: 1, replaceThreshold: 0.9 },
+    raster: { scale: 0.85, quality: 0.3 }
   }
 };
 
@@ -887,25 +897,67 @@ async function rasterCompress(
   };
 }
 
+async function keepBestEffortBlob(
+  originalBuffer: ArrayBuffer,
+  originalSize: number,
+  candidate: Blob,
+  method: string,
+  note?: string
+): Promise<{ blob: Blob; method: string; note?: string; preservedOriginal: boolean }> {
+  const shouldKeepOriginal = candidate.size >= originalSize * 0.995 || candidate.size > originalSize + 1024;
+
+  if (shouldKeepOriginal) {
+    return {
+      blob: new Blob([originalBuffer], { type: 'application/pdf' }),
+      method: `${method} (kept original because the compressed file was not smaller)`,
+      note: note ? `${note} The output was not meaningfully smaller, so the original file was kept.` : 'The output was not meaningfully smaller, so the original file was kept.',
+      preservedOriginal: true
+    };
+  }
+
+  return {
+    blob: candidate,
+    method,
+    note,
+    preservedOriginal: false
+  };
+}
+
 /**
  * Main compression function with mode selection
  * @param mode - 'smart' (default), 'aggressive', or 'lossless'
  */
 export async function compressPdf(
   file: File,
-  level: 'recommended' | 'extreme' = 'recommended',
-  mode: 'smart' | 'aggressive' | 'lossless' = 'smart'
-): Promise<ProcessingResult & { method?: string }> {
+  level: PdfCompressionLevel = 'balanced',
+  mode: PdfCompressionMode = 'smart',
+  analysis?: PdfCompressionAnalysis
+): Promise<ProcessingResult & { method?: string; note?: string; analysis?: PdfCompressionAnalysis; preservedOriginal?: boolean }> {
   try {
+    const originalBuffer = await file.arrayBuffer();
+    const compressionAnalysis = analysis ?? await analyzePdfCompression(file);
+
+    if (compressionAnalysis.status === 'encrypted') {
+      return {
+        success: false,
+        error: 'This PDF appears to be password-protected or encrypted. Unlock it before compressing.'
+      };
+    }
+
+    if (compressionAnalysis.status === 'corrupted') {
+      return {
+        success: false,
+        error: 'This PDF appears to be corrupted and could not be analyzed safely.'
+      };
+    }
+
     // Map level to config
-    const configKey = level === 'extreme' ? 'extreme' : 'recommended';
-    const config = COMPRESSION_CONFIGS[configKey];
+    const config = COMPRESSION_CONFIGS[level];
 
     // LOSSLESS MODE: Metadata removal only
     if (mode === 'lossless') {
 
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pdfDoc = await PDFDocument.load(originalBuffer);
       pdfDoc.setTitle('');
       pdfDoc.setAuthor('');
       pdfDoc.setSubject('');
@@ -914,12 +966,22 @@ export async function compressPdf(
       pdfDoc.setCreator('');
       const optimizedBytes = await pdfDoc.save({ useObjectStreams: true });
       const optimizedBlob = new Blob([optimizedBytes], { type: 'application/pdf' });
+      const kept = await keepBestEffortBlob(
+        originalBuffer,
+        file.size,
+        optimizedBlob,
+        'Lossless (metadata cleanup only)',
+        'Lossless mode strips metadata and repacks objects, but large reductions are uncommon.'
+      );
 
       return {
         success: true,
-        blob: optimizedBlob,
-        filename: file.name.replace('.pdf', '-optimized.pdf'),
-        method: 'Lossless (Metadata Only)'
+        blob: kept.blob,
+        filename: replacePdfExtension(file.name, kept.preservedOriginal ? '-original' : '-optimized'),
+        method: kept.method,
+        note: kept.note,
+        analysis: compressionAnalysis,
+        preservedOriginal: kept.preservedOriginal
       };
     }
 
@@ -927,11 +989,21 @@ export async function compressPdf(
     if (mode === 'aggressive') {
 
       const rasterResult = await rasterCompress(file, config.raster);
+      const kept = await keepBestEffortBlob(
+        originalBuffer,
+        file.size,
+        rasterResult.blob,
+        'Strong raster compression',
+        'Aggressive mode rasterizes pages, so it can shrink image-heavy PDFs but will destroy text searchability.'
+      );
       return {
         success: true,
-        blob: rasterResult.blob,
-        filename: file.name.replace('.pdf', '-compressed.pdf'),
-        method: rasterResult.method
+        blob: kept.blob,
+        filename: replacePdfExtension(file.name, kept.preservedOriginal ? '-original' : '-compressed'),
+        method: kept.method,
+        note: kept.note,
+        analysis: compressionAnalysis,
+        preservedOriginal: kept.preservedOriginal
       };
     }
 
@@ -948,31 +1020,50 @@ export async function compressPdf(
 
     // If we compressed at least one image OR got >5% reduction, use vector result
     if (imagesCompressed > 0 || vectorRatio < 0.95) {
+      const kept = await keepBestEffortBlob(
+        originalBuffer,
+        file.size,
+        vectorResult.blob,
+        'Smart vector compression',
+        'Smart mode only rewrites image streams and metadata. Text-heavy PDFs often compress only a little.'
+      );
 
       return {
         success: true,
-        blob: vectorResult.blob,
-        filename: file.name.replace('.pdf', '-compressed.pdf'),
-        method: vectorResult.method
+        blob: kept.blob,
+        filename: replacePdfExtension(file.name, kept.preservedOriginal ? '-original' : '-compressed'),
+        method: kept.method,
+        note: kept.note,
+        analysis: compressionAnalysis,
+        preservedOriginal: kept.preservedOriginal
       };
     }
 
     // No images were compressed - this is a text-only PDF
     // DO NOT rasterize! Just return metadata-optimized version
+    const kept = await keepBestEffortBlob(
+      originalBuffer,
+      file.size,
+      vectorResult.blob,
+      'Smart vector compression',
+      'This looks like a text-heavy PDF. Compression gains are likely to be small.'
+    );
 
     return {
       success: true,
-      blob: vectorResult.blob,
-      filename: file.name.replace('.pdf', '-optimized.pdf'),
-      method: 'Smart Vector (Text-only PDF - Metadata optimized)'
+      blob: kept.blob,
+      filename: replacePdfExtension(file.name, kept.preservedOriginal ? '-original' : '-optimized'),
+      method: kept.method,
+      note: kept.note,
+      analysis: compressionAnalysis,
+      preservedOriginal: kept.preservedOriginal
     };
   } catch (error) {
     console.error("Compression error:", error);
 
     // Fallback: metadata removal only
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pdfDoc = await PDFDocument.load(await file.arrayBuffer());
       pdfDoc.setTitle('');
       pdfDoc.setAuthor('');
       pdfDoc.setSubject('');
@@ -983,13 +1074,14 @@ export async function compressPdf(
       return {
         success: true,
         blob: optimizedBlob,
-        filename: file.name.replace('.pdf', '-optimized.pdf'),
-        method: 'Metadata Removal Only'
+        filename: replacePdfExtension(file.name, '-optimized'),
+        method: 'Metadata Removal Only',
+        note: 'The main compression pass failed, so the tool fell back to metadata cleanup only.'
       };
     } catch (fallbackError) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'PDF compression failed'
+        error: fallbackError instanceof Error ? fallbackError.message : (error instanceof Error ? error.message : 'PDF compression failed')
       };
     }
   }

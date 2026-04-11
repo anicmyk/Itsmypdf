@@ -21,6 +21,7 @@ import {
   comparePdfs,
   getPdfInfo
 } from './pdfProcessor';
+import { analyzePdfCompression } from './pdfCompressionAnalysis';
 
 export interface ClientToolResult {
   success: boolean;
@@ -90,7 +91,17 @@ export async function processClientTool(
         if (files.length !== 1) {
           throw new Error('Please upload exactly 1 PDF file');
         }
-        result = await compressPdf(files[0]);
+        {
+          const analysis = await analyzePdfCompression(files[0]);
+          if (analysis.status !== 'ready') {
+            throw new Error(
+              analysis.status === 'encrypted'
+                ? 'This PDF is password-protected or encrypted. Unlock it before compressing.'
+                : 'This PDF could not be analyzed safely. It may be corrupted.'
+            );
+          }
+          result = await compressPdf(files[0], 'balanced', 'smart', analysis);
+        }
         break;
 
       case 'to-jpg': {

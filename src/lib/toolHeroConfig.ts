@@ -34,7 +34,7 @@ export const TOOL_HERO_UI: Record<string, ToolHeroUI> = {
   },
   'compress-pdf': {
     title: 'Compress PDF',
-    description: 'Reduce PDF file size while maintaining quality.',
+    description: 'Analyze your PDF first, then reduce size with honest best-effort estimates.',
     accept: 'application/pdf',
     multiple: true
   },
