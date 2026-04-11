@@ -20,7 +20,7 @@ export const COMPRESS_PDF_OVERVIEW = {
     },
     {
       title: 'Honest about limits',
-      body: 'Text-heavy or already-optimized PDFs often shrink only a little, so the result may stay close to the original.'
+      body: 'Text-heavy or already-optimized PDFs often shrink only a little, and exact targets like 500KB or 1MB are not always realistic.'
     }
   ]
 };
