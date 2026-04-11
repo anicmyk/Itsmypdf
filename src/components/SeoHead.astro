@@ -10,7 +10,12 @@ interface Props {
 
 const { title, description = '', canonical, noindex = false, ogImage = '/og-image.jpg', ogType = 'website' } = Astro.props;
 const site = Astro.site ?? new URL(Astro.url.origin);
-const canonicalUrl = canonical ? new URL(canonical, site) : new URL(Astro.url.pathname, site);
+const normalizePath = (value: string) => {
+  if (value === '/') return '/';
+  return value.endsWith('/') ? value.slice(0, -1) : value;
+};
+const canonicalPath = normalizePath(canonical ?? Astro.url.pathname);
+const canonicalUrl = new URL(canonicalPath, site);
 const ogImageUrl = ogImage ? new URL(ogImage, site) : undefined;
 const sitemapUrl = new URL('/sitemap-index.xml', site).href;
 const structuredData = JSON.stringify([
