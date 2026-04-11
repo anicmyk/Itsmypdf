@@ -1,27 +1,214 @@
-import React, { useState, useEffect, useRef } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
-import { Plus, ArrowRight, Settings, CheckCircle, Zap, X, AlertTriangle, Info } from 'lucide-react';
-import { LoadingSpinner } from '../shared/LoadingSpinner';
-import { compressPdf } from '@/utils/pdfProcessor';
+import React, { useMemo, useRef, useState } from 'react';
+import { Plus, ArrowRight, Settings, CheckCircle, Zap, X, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { compressPdf } from '@/utils/pdfProcessor';
 import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
 import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
-
-// Set up PDF.js
-if (typeof window !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
-}
+import {
+    analyzePdfCompression,
+    buildCompressionSummary,
+    type CompressionLevel,
+    type CompressionMode,
+    type PdfCompressionAnalysis
+} from '@/utils/pdfCompressionAnalysis';
 
 const hero = TOOL_HERO_UI['compress-pdf'];
 
 interface PDFFile {
     id: string;
     file: File;
-    pdfDoc: any;
     pageCount: number;
+    analysis: PdfCompressionAnalysis;
+}
+
+const MODE_META: Record<CompressionMode, {
+    label: string;
+    description: string;
+    accent: string;
+    badge: string;
+}> = {
+    smart: {
+        label: 'Smart compression',
+        description: 'Good default for most files.',
+        accent: 'border-brand-blue-500 bg-brand-blue-50',
+        badge: 'Recommended'
+    },
+    aggressive: {
+        label: 'Aggressive rasterization',
+        description: 'Best for scans. Searchable text is lost.',
+        accent: 'border-amber-500 bg-amber-50',
+        badge: 'Highest shrink'
+    },
+    lossless: {
+        label: 'Metadata cleanup only',
+        description: 'Keeps quality. Usually smaller savings.',
+        accent: 'border-brand-blue-500 bg-brand-blue-50',
+        badge: 'Safest'
+    }
+};
+
+const LEVEL_META: Record<CompressionLevel, { label: string; description: string }> = {
+    low: { label: 'Low compression', description: 'Gentle.' },
+    balanced: { label: 'Balanced', description: 'Best default.' },
+    strong: { label: 'Strong compression', description: 'Smaller file.' },
+    maximum: { label: 'Maximum possible', description: 'Smallest file.' }
+};
+
+const MODE_HELPER: Record<CompressionMode, string> = {
+    smart: 'Best for most PDFs.',
+    aggressive: 'Best for scans. Searchable text is lost.',
+    lossless: 'Keeps quality. Usually smaller savings.'
+};
+
+const LEVEL_HELPER: Record<CompressionLevel, string> = {
+    low: 'Gentle compression.',
+    balanced: 'Best default.',
+    strong: 'Smaller file.',
+    maximum: 'Smallest file.'
+};
+
+function formatBytes(bytes: number) {
+    if (bytes < 1024) return `${bytes} B`;
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(kb < 10 ? 1 : 0)} KB`;
+    const mb = kb / 1024;
+    return `${mb.toFixed(mb < 10 ? 1 : 0)} MB`;
+}
+
+function classifyLabel(analysis: PdfCompressionAnalysis) {
+    switch (analysis.contentType) {
+        case 'small':
+            return 'Already small';
+        case 'text-heavy':
+            return 'Text-heavy';
+        case 'mixed':
+            return 'Mixed content';
+        case 'image-heavy':
+            return 'Image-heavy';
+        case 'scanned':
+            return 'Scanned';
+        case 'already-optimized':
+            return 'Already optimized';
+        default:
+            return 'Unknown structure';
+    }
+}
+
+function getRecommendedCombo(analysis: PdfCompressionAnalysis) {
+    return `${MODE_META[analysis.recommendedMode].label} + ${LEVEL_META[analysis.recommendedLevel].label}`;
+}
+
+function getLikelySavingsLabel(analysis: PdfCompressionAnalysis, summary?: ReturnType<typeof buildCompressionSummary>) {
+    if (analysis.contentType === 'small' || analysis.contentType === 'already-optimized') {
+        return 'Already optimized';
+    }
+
+    const maxReduction = summary?.maxReductionPercent ?? 0;
+    if (maxReduction <= 8) return 'Small savings likely';
+    if (maxReduction <= 24) return 'Modest savings likely';
+    if (maxReduction <= 50) return 'Moderate savings likely';
+    return 'Large savings likely';
+}
+
+function combineAnalyses(files: PDFFile[]): PdfCompressionAnalysis | null {
+    if (files.length === 0) return null;
+    if (files.length === 1) return files[0].analysis;
+
+    const first = files[0].analysis;
+    const totals = files.reduce(
+        (acc, file) => {
+            acc.fileSizeBytes += file.analysis.fileSizeBytes;
+            acc.pageCount += file.analysis.pageCount;
+            acc.textPages += file.analysis.textPages;
+            acc.imagePages += file.analysis.imagePages;
+            acc.imageCount += file.analysis.imageCount;
+            acc.imageBytes += file.analysis.imageBytes;
+            acc.maxImageWidth = Math.max(acc.maxImageWidth, file.analysis.maxImageWidth);
+            acc.maxImageHeight = Math.max(acc.maxImageHeight, file.analysis.maxImageHeight);
+            acc.embeddedFontCount += file.analysis.embeddedFontCount;
+            acc.embeddedFontSubsetCount += file.analysis.embeddedFontSubsetCount;
+            acc.metadataFieldCount += file.analysis.metadataFieldCount;
+            acc.metadataStreamBytes += file.analysis.metadataStreamBytes;
+            acc.notes.push(...file.analysis.notes);
+            acc.warnings.push(...file.analysis.warnings);
+            acc.canCompressMeaningfully = acc.canCompressMeaningfully || file.analysis.canCompressMeaningfully;
+            acc.riskRank = Math.max(acc.riskRank, file.analysis.riskLevel === 'high' ? 3 : file.analysis.riskLevel === 'medium' ? 2 : 1);
+            return acc;
+        },
+        {
+            fileSizeBytes: 0,
+            pageCount: 0,
+            textPages: 0,
+            imagePages: 0,
+            imageCount: 0,
+            imageBytes: 0,
+            maxImageWidth: 0,
+            maxImageHeight: 0,
+            embeddedFontCount: 0,
+            embeddedFontSubsetCount: 0,
+            metadataFieldCount: 0,
+            metadataStreamBytes: 0,
+            notes: [] as string[],
+            warnings: [] as string[],
+            canCompressMeaningfully: false,
+            riskRank: 1
+        }
+    );
+
+    const contentType: PdfCompressionAnalysis['contentType'] =
+        totals.imagePages >= Math.max(1, Math.ceil(totals.pageCount * 0.75))
+            ? 'scanned'
+            : totals.imagePages >= Math.max(1, Math.ceil(totals.pageCount * 0.45))
+                ? 'image-heavy'
+                : totals.textPages >= Math.max(1, Math.ceil(totals.pageCount * 0.7))
+                    ? 'text-heavy'
+                    : totals.fileSizeBytes <= 256 * 1024 || totals.pageCount <= 2
+                        ? 'small'
+                        : totals.imageCount > 0 || totals.embeddedFontCount > 0
+                            ? 'mixed'
+                            : 'unknown';
+
+    const recommendedMode: CompressionMode =
+        contentType === 'scanned' || contentType === 'image-heavy'
+            ? 'smart'
+            : contentType === 'small'
+                ? 'lossless'
+                : 'smart';
+
+    const recommendedLevel: CompressionLevel =
+        contentType === 'scanned' || contentType === 'image-heavy'
+            ? 'strong'
+            : contentType === 'small'
+                ? 'low'
+                : 'balanced';
+
+    return {
+        ...first,
+        fileName: `${files.length} PDFs`,
+        fileSizeBytes: totals.fileSizeBytes,
+        pageCount: totals.pageCount,
+        contentType,
+        textPages: totals.textPages,
+        imagePages: totals.imagePages,
+        imageCount: totals.imageCount,
+        imageBytes: totals.imageBytes,
+        maxImageWidth: totals.maxImageWidth,
+        maxImageHeight: totals.maxImageHeight,
+        embeddedFontCount: totals.embeddedFontCount,
+        embeddedFontSubsetCount: totals.embeddedFontSubsetCount,
+        metadataFieldCount: totals.metadataFieldCount,
+        metadataStreamBytes: totals.metadataStreamBytes,
+        hasMetadataStream: totals.metadataStreamBytes > 0,
+        notes: Array.from(new Set(totals.notes)),
+        warnings: Array.from(new Set(totals.warnings)),
+        canCompressMeaningfully: totals.canCompressMeaningfully,
+        recommendedMode,
+        recommendedLevel,
+        riskLevel: totals.riskRank === 3 ? 'high' : totals.riskRank === 2 ? 'medium' : 'low'
+    };
 }
 
 const CompressPDFTool: React.FC = () => {
@@ -30,47 +217,57 @@ const CompressPDFTool: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isCompressing, setIsCompressing] = useState(false);
     const [compressionProgress, setCompressionProgress] = useState(0);
-    const [compressionLevel, setCompressionLevel] = useState<'recommended' | 'extreme'>('recommended');
-    const [compressionMode, setCompressionMode] = useState<'smart' | 'aggressive' | 'lossless'>('smart');
+    const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>('balanced');
+    const [compressionMode, setCompressionMode] = useState<CompressionMode>('smart');
 
-    // Load PDFs
+    const aggregateAnalysis = useMemo(() => combineAnalyses(pdfFiles), [pdfFiles]);
+    const selectedSummary = useMemo(() => {
+        if (!aggregateAnalysis) return null;
+        return buildCompressionSummary(aggregateAnalysis, compressionMode, compressionLevel);
+    }, [aggregateAnalysis, compressionMode, compressionLevel]);
+
     const handleFileSelect = async (files: FileList | File[]) => {
         const fileArray = Array.from(files);
-        const pdfFilesToAdd: PDFFile[] = [];
+        const nextFiles: PDFFile[] = [];
+        const failures: string[] = [];
 
         setIsLoading(true);
-
         try {
             for (const file of fileArray) {
                 if (file.type !== 'application/pdf') {
+                    failures.push(`${file.name}: not a PDF`);
                     continue;
                 }
 
-                const url = URL.createObjectURL(file);
                 try {
-                    const loadedPdfDoc = await pdfjsLib.getDocument({ url }).promise;
-                    const pageCount = loadedPdfDoc.numPages;
+                    const analysis = await analyzePdfCompression(file);
+                    if (analysis.status !== 'ready') {
+                        failures.push(`${file.name}: ${analysis.status === 'encrypted' ? 'password-protected' : 'corrupted or unreadable'}`);
+                        continue;
+                    }
 
-                    pdfFilesToAdd.push({
+                    nextFiles.push({
                         id: `${Date.now()}-${Math.random()}`,
                         file,
-                        pdfDoc: loadedPdfDoc,
-                        pageCount
+                        pageCount: analysis.pageCount,
+                        analysis
                     });
                 } catch (error) {
-                    console.error('Error loading PDF:', file.name, error);
-                } finally {
-                    URL.revokeObjectURL(url);
+                    console.error('Error analyzing PDF:', file.name, error);
+                    failures.push(`${file.name}: could not be analyzed`);
                 }
             }
 
-            if (pdfFilesToAdd.length > 0) {
-                setPdfFiles(prev => [...prev, ...pdfFilesToAdd]);
+            if (nextFiles.length > 0) {
+                setPdfFiles(prev => [...prev, ...nextFiles]);
             }
 
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error processing files:', error);
+            if (failures.length > 0 && nextFiles.length === 0) {
+                toast.error('No usable PDFs were loaded.');
+            } else if (failures.length > 0) {
+                toast.warning(`Skipped ${failures.length} file${failures.length > 1 ? 's' : ''} that were not usable.`);
+            }
+        } finally {
             setIsLoading(false);
         }
     };
@@ -87,30 +284,8 @@ const CompressPDFTool: React.FC = () => {
     };
 
     const removePDF = (id: string) => {
-        setPdfFiles(prev => {
-            const fileToRemove = prev.find(f => f.id === id);
-            if (fileToRemove && fileToRemove.pdfDoc && fileToRemove.pdfDoc.destroy) {
-                fileToRemove.pdfDoc.destroy().catch(() => { });
-            }
-            return prev.filter(f => f.id !== id);
-        });
+        setPdfFiles(prev => prev.filter(f => f.id !== id));
     };
-
-    // Cleanup on unmount
-    const pdfFilesRef = useRef(pdfFiles);
-    useEffect(() => {
-        pdfFilesRef.current = pdfFiles;
-    }, [pdfFiles]);
-
-    useEffect(() => {
-        return () => {
-            pdfFilesRef.current.forEach(pdfFile => {
-                if (pdfFile.pdfDoc && pdfFile.pdfDoc.destroy) {
-                    pdfFile.pdfDoc.destroy().catch(() => { });
-                }
-            });
-        };
-    }, []);
 
     const handleCompress = async () => {
         if (pdfFiles.length === 0) return;
@@ -121,30 +296,21 @@ const CompressPDFTool: React.FC = () => {
         try {
             const totalFiles = pdfFiles.length;
 
-            for (let i = 0; i < totalFiles; i++) {
+            for (let i = 0; i < totalFiles; i += 1) {
                 const pdfFile = pdfFiles[i];
-
-                // Calculate base progress for this file
                 const baseProgress = Math.floor((i / totalFiles) * 100);
                 const progressPerFile = Math.floor(100 / totalFiles);
 
-                // Show initial progress for this file
                 setCompressionProgress(baseProgress);
 
-                // Add intermediate progress updates for better UX
                 const progressInterval = setInterval(() => {
                     setCompressionProgress(prev => {
                         const target = baseProgress + Math.floor(progressPerFile * 0.9);
-                        if (prev < target) {
-                            return Math.min(prev + 5, target);
-                        }
-                        return prev;
+                        return prev < target ? Math.min(prev + 5, target) : prev;
                     });
                 }, 100);
 
-                const result = await compressPdf(pdfFile.file, compressionLevel, compressionMode);
-
-                // Clear the interval
+                const result = await compressPdf(pdfFile.file, compressionLevel, compressionMode, pdfFile.analysis);
                 clearInterval(progressInterval);
 
                 if (result.success && result.blob) {
@@ -160,20 +326,26 @@ const CompressPDFTool: React.FC = () => {
                     const originalSize = (pdfFile.file.size / 1024 / 1024).toFixed(2);
                     const compressedSize = (result.blob.size / 1024 / 1024).toFixed(2);
                     const reduction = ((1 - result.blob.size / pdfFile.file.size) * 100).toFixed(0);
-                    const method = (result as any).method || 'Compressed';
-                    toast.success(`${method}: ${originalSize}MB → ${compressedSize}MB (${reduction}% reduction)`);
+                    const note = result.note ? ` ${result.note}` : '';
+
+                    if (result.preservedOriginal) {
+                        toast.info(`${result.method || 'Compression'}: kept the original file because the output was not smaller.${note}`);
+                    } else if (result.blob.size >= pdfFile.file.size) {
+                        toast.info(`No meaningful reduction for ${pdfFile.file.name}. The original file was kept.${note}`);
+                    } else {
+                        toast.success(`${result.method || 'Compression'}: ${originalSize} MB -> ${compressedSize} MB (${reduction}% reduction).${note}`);
+                    }
                 } else {
                     throw new Error(result.error);
                 }
 
-                // Update progress: file completed
                 setCompressionProgress(Math.floor(((i + 1) / totalFiles) * 100));
             }
 
             setCompressionProgress(100);
-        } catch (err) {
-            console.error('Error compressing PDF:', err);
-            toast.error('Failed to compress PDF');
+        } catch (error) {
+            console.error('Error compressing PDF:', error);
+            toast.error(error instanceof Error ? error.message : 'Failed to compress PDF');
         } finally {
             setTimeout(() => {
                 setIsCompressing(false);
@@ -195,140 +367,144 @@ const CompressPDFTool: React.FC = () => {
         );
     }
 
-    // Extract settings content for mobile panel
+    const totalFiles = pdfFiles.length;
+    const analysis = aggregateAnalysis;
+
     const settingsContent = (
-        <div className="p-5 space-y-6">
-            <div className="space-y-3">
-                <button
-                    onClick={handleDropZoneClick}
-                    className="w-full bg-brand-blue-600 text-white font-medium py-2.5 px-4 rounded-lg hover:bg-brand-blue-700 active:bg-brand-blue-800 transition-colors duration-200 shadow-sm flex items-center justify-center gap-2 min-h-[48px]"
-                >
-                    <Plus className="h-5 w-5" />
-                    Add PDF files
-                    {pdfFiles.length > 0 && (
-                        <span className="bg-white/20 text-white text-xs font-bold rounded-full px-2 py-0.5 ml-1">
-                            {pdfFiles.length}
-                        </span>
-                    )}
-                </button>
+        <div className="space-y-3">
+            <button
+                onClick={handleDropZoneClick}
+                className="w-full bg-brand-blue-600 text-white font-medium py-2.5 px-4 rounded-lg hover:bg-brand-blue-700 active:bg-brand-blue-800 transition-colors duration-200 shadow-sm flex items-center justify-center gap-2 min-h-[46px]"
+            >
+                <Plus className="h-5 w-5" />
+                Add PDF files
+                <span className="bg-white/20 text-white text-xs font-bold rounded-full px-2 py-0.5 ml-1">
+                    {totalFiles}
+                </span>
+            </button>
+
+            {analysis && (
+                <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 shadow-sm">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-500">Recommended</p>
+                            <p className="text-sm font-medium text-gray-900 truncate">{getRecommendedCombo(analysis)}</p>
+                            <p className="text-xs text-gray-600">{getLikelySavingsLabel(analysis, selectedSummary ?? undefined)}</p>
+                        </div>
+                        <CheckCircle className="w-4 h-4 text-brand-blue-600 flex-shrink-0" />
+                    </div>
+                </div>
+            )}
+
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-800">Compression mode</label>
+                <div className="relative">
+                    <select
+                        value={compressionMode}
+                        onChange={(e) => setCompressionMode(e.target.value as CompressionMode)}
+                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 pr-10 text-sm text-gray-900 shadow-sm outline-none transition-colors hover:border-brand-blue-200 focus:border-brand-blue-500 focus:ring-2 focus:ring-brand-blue-100"
+                    >
+                        {Object.entries(MODE_META).map(([modeKey, meta]) => (
+                            <option key={modeKey} value={modeKey}>
+                                {meta.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <p className="text-xs text-gray-600">{MODE_HELPER[compressionMode]}</p>
             </div>
 
-            {/* Compression Mode Selection */}
-            <div className="space-y-3">
-                <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                    Compression Mode
-                </h3>
-
-                {/* Smart Mode (Default) */}
-                <button
-                    onClick={() => setCompressionMode('smart')}
-                    className={`w-full p-4 rounded-xl border-2 text-left transition-all min-h-[48px] ${compressionMode === 'smart' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                >
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-gray-800">Smart (Recommended)</span>
-                        {compressionMode === 'smart' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">Compresses images only, preserves text quality.</p>
-                    <p className="text-xs text-gray-500">Best for: Documents with photos</p>
-                </button>
-
-                {/* Aggressive Mode */}
-                <button
-                    onClick={() => setCompressionMode('aggressive')}
-                    className={`w-full p-4 rounded-xl border-2 text-left transition-all min-h-[48px] ${compressionMode === 'aggressive' ? 'border-amber-500 bg-amber-50' : 'border-gray-200 hover:border-amber-200'}`}
-                >
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-gray-800 flex items-center gap-2">
-                            Aggressive (Raster)
-                            <AlertTriangle className="w-4 h-4 text-amber-600" />
-                        </span>
-                        {compressionMode === 'aggressive' && <CheckCircle className="w-5 h-5 text-amber-600" />}
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">Converts pages to images.</p>
-                    <p className="text-xs text-amber-700 font-medium">⚠️ Text will become non-searchable and may appear blurry</p>
-                    <p className="text-xs text-gray-500 mt-1">Best for: Scanned documents only</p>
-                </button>
-
-                {/* Lossless Mode */}
-                <button
-                    onClick={() => setCompressionMode('lossless')}
-                    className={`w-full p-4 rounded-xl border-2 text-left transition-all min-h-[48px] ${compressionMode === 'lossless' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                >
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-gray-800">Lossless (Metadata Only)</span>
-                        {compressionMode === 'lossless' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">Removes metadata only. No quality loss.</p>
-                    <p className="text-xs text-gray-500">Best for: When quality must be preserved 100%</p>
-                </button>
-            </div>
-
-            {/* Warning Banner for Aggressive Mode */}
             {compressionMode === 'aggressive' && (
-                <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
                     <div className="flex items-start gap-3">
-                        <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div>
-                            <p className="text-sm font-bold text-amber-900">Warning: Aggressive Mode</p>
-                            <p className="text-xs text-amber-800 mt-1">
-                                This mode will convert text to images. Text will no longer be searchable or selectable. Only use for scanned documents.
-                            </p>
+                            <p className="text-sm font-medium text-amber-900">Searchable text will be lost.</p>
+                            <p className="text-xs text-amber-800 mt-1">Use this only for scans or image-based PDFs.</p>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Quality Level (only show for Smart and Aggressive modes) */}
-            {compressionMode !== 'lossless' && (
-                <div className="space-y-3">
-                    <h3 className="text-sm font-bold text-gray-700">Quality Level</h3>
-
-                    <button
-                        onClick={() => setCompressionLevel('recommended')}
-                        className={`w-full p-4 rounded-xl border-2 text-left transition-all min-h-[48px] ${compressionLevel === 'recommended' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-800">Compression strength</label>
+                <div className="relative">
+                    <select
+                        value={compressionLevel}
+                        onChange={(e) => setCompressionLevel(e.target.value as CompressionLevel)}
+                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 pr-10 text-sm text-gray-900 shadow-sm outline-none transition-colors hover:border-brand-blue-200 focus:border-brand-blue-500 focus:ring-2 focus:ring-brand-blue-100"
                     >
-                        <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-gray-800">Recommended</span>
-                            {compressionLevel === 'recommended' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                        </div>
-                        <p className="text-sm text-gray-600">Balanced quality and size.</p>
-                    </button>
-
-                    <button
-                        onClick={() => setCompressionLevel('extreme')}
-                        className={`w-full p-4 rounded-xl border-2 text-left transition-all min-h-[48px] ${compressionLevel === 'extreme' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                    >
-                        <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-gray-800">Extreme</span>
-                            {compressionLevel === 'extreme' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                        </div>
-                        <p className="text-sm text-gray-600">Maximum compression. Lower quality.</p>
-                        <p className="text-xs text-amber-700 mt-1">⚠️ May significantly reduce image quality</p>
-                    </button>
+                        {(['low', 'balanced', 'strong', 'maximum'] as CompressionLevel[]).map((level) => (
+                            <option key={level} value={level}>
+                                {LEVEL_META[level].label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+                <p className="text-xs text-gray-600">{LEVEL_HELPER[compressionLevel]}</p>
+            </div>
+
+            {analysis && (
+                <details className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 shadow-sm">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-gray-900 flex items-center justify-between">
+                        <span>View detailed analysis</span>
+                        <span className="text-gray-500 text-xs font-normal">Optional</span>
+                    </summary>
+                    <div className="mt-3 space-y-3 text-sm text-gray-700">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
+                                <p className="text-xs text-gray-500">Pages</p>
+                                <p className="mt-1 font-medium text-gray-900">{analysis.pageCount}</p>
+                            </div>
+                            <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
+                                <p className="text-xs text-gray-500">Current size</p>
+                                <p className="mt-1 font-medium text-gray-900">{formatBytes(analysis.fileSizeBytes)}</p>
+                            </div>
+                            <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
+                                <p className="text-xs text-gray-500">Largest image</p>
+                                <p className="mt-1 font-medium text-gray-900">
+                                    {analysis.maxImageWidth > 0 && analysis.maxImageHeight > 0
+                                        ? `${analysis.maxImageWidth} x ${analysis.maxImageHeight}px`
+                                        : 'Not fully detected'}
+                                </p>
+                            </div>
+                            <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
+                                <p className="text-xs text-gray-500">File type</p>
+                                <p className="mt-1 font-medium text-gray-900">{classifyLabel(analysis)}</p>
+                            </div>
+                        </div>
+
+                        {analysis.notes.length > 0 && (
+                            <div>
+                                <p className="text-xs font-semibold text-gray-500">Notes</p>
+                                <ul className="mt-2 space-y-1.5 text-sm text-gray-700">
+                                    {analysis.notes.slice(0, 3).map((note) => (
+                                        <li key={note} className="flex gap-2">
+                                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-gray-300 flex-shrink-0" />
+                                            <span>{note}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {analysis.warnings.length > 0 && (
+                            <div>
+                                <p className="text-xs font-semibold text-gray-500">Warnings</p>
+                                <ul className="mt-2 space-y-1.5 text-sm text-amber-700">
+                                    {analysis.warnings.slice(0, 2).map((warning) => (
+                                        <li key={warning} className="flex gap-2">
+                                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                                            <span>{warning}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                </details>
             )}
 
-            <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Total Files</span>
-                    <span className="font-medium text-gray-900">{pdfFiles.length}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Total Size</span>
-                    <span className="font-medium text-gray-900">
-                        {(pdfFiles.reduce((sum, f) => sum + f.file.size, 0) / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                </div>
-                <div className="flex items-center justify-between text-sm pt-2 border-t border-gray-200">
-                    <span className="text-gray-500">Expected Reduction</span>
-                    <span className="font-bold text-brand-blue-600">
-                        {compressionMode === 'lossless' ? '~5-15%' :
-                            compressionMode === 'aggressive' ?
-                                (compressionLevel === 'recommended' ? '~70-80%' : '~85-90%') :
-                                '~30-70% (images only)'}
-                    </span>
-                </div>
-            </div>
         </div>
     );
 
@@ -347,59 +523,54 @@ const CompressPDFTool: React.FC = () => {
                 {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/75 backdrop-blur-sm z-50 animate-fade-in">
                         <div className="text-center">
-                            <div className="w-12 h-12 border-4 border-brand-blue-200 border-t-brand-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-gray-600 font-medium">Loading PDFs...</p>
+                            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-brand-blue-600" />
+                            <p className="text-gray-600 font-medium">Analyzing PDFs...</p>
                         </div>
                     </div>
                 )}
 
-                {/* Main content: PDF Thumbnails Grid */}
                 <div className="flex-grow p-4 md:p-8 flex flex-col items-center overflow-y-auto bg-gray-100 relative pb-24 md:pb-8">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 max-w-6xl mx-auto w-full">
-                        {pdfFiles.map((pdfFile) => (
-                            <div key={pdfFile.id} className="relative">
-                                <div className="group flex flex-col items-center flex-shrink-0">
-                                    <PdfPageCard
-                                        pageNumber={1}
-                                        file={pdfFile.file}
-                                        pageIndex={0}
-                                    >
-                                        {/* Remove button - only show on hover */}
-                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                                            <button
-                                                onClick={() => removePDF(pdfFile.id)}
-                                                className="bg-brand-blue-500 text-white rounded-full p-1.5 hover:bg-brand-blue-600 transition-colors duration-200 shadow-lg"
-                                                aria-label="Remove PDF"
-                                                title="Remove"
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </button>
-                                        </div>
+                    <div className="w-full max-w-6xl mx-auto">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 w-full">
+                            {pdfFiles.map((pdfFile) => {
+                                return (
+                                    <div key={pdfFile.id} className="relative">
+                                        <div className="group flex flex-col items-center flex-shrink-0">
+                                            <PdfPageCard pageNumber={1} file={pdfFile.file} pageIndex={0}>
+                                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                                                    <button
+                                                        onClick={() => removePDF(pdfFile.id)}
+                                                        className="bg-brand-blue-500 text-white rounded-full p-1.5 hover:bg-brand-blue-600 transition-colors duration-200 shadow-lg"
+                                                        aria-label="Remove PDF"
+                                                        title="Remove"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </button>
+                                                </div>
 
-                                        {/* Filename inside card at bottom */}
-                                        <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm px-2 py-1.5 border-t border-gray-200">
-                                            <p className="text-xs font-medium text-gray-800 text-center truncate" title={pdfFile.file.name}>
-                                                {pdfFile.file.name}
-                                            </p>
-                                        </div>
-                                    </PdfPageCard>
+                                                <div className="absolute inset-x-0 bottom-0 bg-white/95 backdrop-blur-sm px-2 py-1.5 border-t border-gray-200">
+                                                    <p className="text-xs font-medium text-gray-800 text-center truncate" title={pdfFile.file.name}>
+                                                        {pdfFile.file.name}
+                                                    </p>
+                                                </div>
+                                            </PdfPageCard>
 
-                                    {/* Hover tooltip - shows file size and page count */}
-                                    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
-                                        <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
-                                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-gray-900" />
-                                            {(pdfFile.file.size / 1024 / 1024).toFixed(2)} MB • {pdfFile.pageCount} {pdfFile.pageCount === 1 ? 'page' : 'pages'}
+                                            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+                                                <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
+                                                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-gray-900" />
+                                                    {(pdfFile.file.size / 1024 / 1024).toFixed(2)} MB • {pdfFile.pageCount} {pdfFile.pageCount === 1 ? 'page' : 'pages'}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
 
-                {/* Mobile Layout - Settings panel, floating button, action button */}
                 <MobileLayout
-                    settingsTitle="Compression Options"
+                    settingsTitle="Compression options"
                     settingsContent={settingsContent}
                     actionButton={{
                         label: 'Compress PDF',
@@ -410,153 +581,19 @@ const CompressPDFTool: React.FC = () => {
                         progress: compressionProgress
                     }}
                 >
-                    {/* Empty - main content rendered above */}
                     <></>
                 </MobileLayout>
 
-                {/* Desktop Sidebar - hidden on mobile */}
                 <aside className="hidden md:flex w-96 flex-shrink-0 bg-white border-l border-gray-200 flex-col h-full shadow-lg z-20">
                     <div className="p-5 border-b border-gray-100">
                         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                             <Settings className="w-5 h-5 text-brand-blue-600" />
-                            Compression Options
+                            Compression options
                         </h2>
                     </div>
 
                     <div className="flex-grow p-5 space-y-6 overflow-y-auto">
-                        <div className="space-y-3">
-                            <button
-                                onClick={handleDropZoneClick}
-                                className="w-full bg-brand-blue-600 text-white font-medium py-2.5 px-4 rounded-lg hover:bg-brand-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
-                            >
-                                <Plus className="h-5 w-5" />
-                                Add PDF files
-                                {pdfFiles.length > 0 && (
-                                    <span className="bg-white/20 text-white text-xs font-bold rounded-full px-2 py-0.5 ml-1">
-                                        {pdfFiles.length}
-                                    </span>
-                                )}
-                            </button>
-                        </div>
-
-                        {/* Compression Mode Selection */}
-                        <div className="space-y-3">
-                            <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                Compression Mode
-                            </h3>
-
-                            {/* Smart Mode (Default) */}
-                            <button
-                                onClick={() => setCompressionMode('smart')}
-                                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${compressionMode === 'smart' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                            >
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="font-bold text-gray-800">Smart (Recommended)</span>
-                                    {compressionMode === 'smart' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">Compresses images only, preserves text quality.</p>
-                                <p className="text-xs text-gray-500">Best for: Documents with photos</p>
-                            </button>
-
-                            {/* Aggressive Mode */}
-                            <button
-                                onClick={() => setCompressionMode('aggressive')}
-                                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${compressionMode === 'aggressive' ? 'border-amber-500 bg-amber-50' : 'border-gray-200 hover:border-amber-200'}`}
-                            >
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="font-bold text-gray-800 flex items-center gap-2">
-                                        Aggressive (Raster)
-                                        <AlertTriangle className="w-4 h-4 text-amber-600" />
-                                    </span>
-                                    {compressionMode === 'aggressive' && <CheckCircle className="w-5 h-5 text-amber-600" />}
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">Converts pages to images.</p>
-                                <p className="text-xs text-amber-700 font-medium">⚠️ Text will become non-searchable and may appear blurry</p>
-                                <p className="text-xs text-gray-500 mt-1">Best for: Scanned documents only</p>
-                            </button>
-
-                            {/* Lossless Mode */}
-                            <button
-                                onClick={() => setCompressionMode('lossless')}
-                                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${compressionMode === 'lossless' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                            >
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="font-bold text-gray-800">Lossless (Metadata Only)</span>
-                                    {compressionMode === 'lossless' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">Removes metadata only. No quality loss.</p>
-                                <p className="text-xs text-gray-500">Best for: When quality must be preserved 100%</p>
-                            </button>
-                        </div>
-
-                        {/* Warning Banner for Aggressive Mode */}
-                        {compressionMode === 'aggressive' && (
-                            <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
-                                <div className="flex items-start gap-3">
-                                    <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                                    <div>
-                                        <p className="text-sm font-bold text-amber-900">Warning: Aggressive Mode</p>
-                                        <p className="text-xs text-amber-800 mt-1">
-                                            This mode will convert text to images. Text will no longer be searchable or selectable. Only use for scanned documents.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Quality Level (only show for Smart and Aggressive modes) */}
-                        {compressionMode !== 'lossless' && (
-                            <div className="space-y-3">
-                                <h3 className="text-sm font-bold text-gray-700">Quality Level</h3>
-
-                                <button
-                                    onClick={() => setCompressionLevel('recommended')}
-                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${compressionLevel === 'recommended' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                                >
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className="font-bold text-gray-800">Recommended</span>
-                                        {compressionLevel === 'recommended' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                                    </div>
-                                    <p className="text-sm text-gray-600">Balanced quality and size.</p>
-                                </button>
-
-                                <button
-                                    onClick={() => setCompressionLevel('extreme')}
-                                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${compressionLevel === 'extreme' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-gray-200 hover:border-brand-blue-200'}`}
-                                >
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className="font-bold text-gray-800">Extreme</span>
-                                        {compressionLevel === 'extreme' && <CheckCircle className="w-5 h-5 text-brand-blue-600" />}
-                                    </div>
-                                    <p className="text-sm text-gray-600">Maximum compression. Lower quality.</p>
-                                    <p className="text-xs text-amber-700 mt-1">⚠️ May significantly reduce image quality</p>
-                                </button>
-                            </div>
-                        )}
-
-
-
-                        <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-500">Total Files</span>
-                                <span className="font-medium text-gray-900">{pdfFiles.length}</span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-500">Total Size</span>
-                                <span className="font-medium text-gray-900">
-                                    {(pdfFiles.reduce((sum, f) => sum + f.file.size, 0) / 1024 / 1024).toFixed(2)} MB
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm pt-2 border-t border-gray-200">
-                                <span className="text-gray-500">Expected Reduction</span>
-                                <span className="font-bold text-brand-blue-600">
-                                    {compressionMode === 'lossless' ? '~5-15%' :
-                                        compressionMode === 'aggressive' ?
-                                            (compressionLevel === 'recommended' ? '~70-80%' : '~85-90%') :
-                                            '~30-70% (images only)'}
-                                </span>
-                            </div>
-                        </div>
+                        {settingsContent}
                     </div>
 
                     <div className="p-5 border-t border-gray-200 bg-gray-50 mt-auto">
@@ -568,7 +605,6 @@ const CompressPDFTool: React.FC = () => {
                                 background: isCompressing ? '#e5e7eb' : '#2563eb'
                             }}
                         >
-                            {/* Progress fill animation */}
                             {isCompressing && (
                                 <div
                                     className="absolute inset-0 bg-brand-blue-600 transition-all duration-300 ease-out"
@@ -576,11 +612,10 @@ const CompressPDFTool: React.FC = () => {
                                 />
                             )}
 
-                            {/* Button content */}
                             <span className="relative z-10 flex items-center">
                                 {isCompressing ? (
                                     <>
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
                                         Compressing... {compressionProgress}%
                                     </>
                                 ) : (
@@ -592,7 +627,6 @@ const CompressPDFTool: React.FC = () => {
                             </span>
                         </button>
 
-                        {/* Bookmark and Share CTAs */}
                         <ToolCTAs variant="sidebar" />
                     </div>
                 </aside>
