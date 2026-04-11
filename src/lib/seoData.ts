@@ -30,10 +30,10 @@ export const ALL_TOOLS_SEO = {
     h1: 'Organize, Rearrange & Reorder PDF Pages for Free'
   },
   'compress-pdf': {
-    title: 'Compress PDF - Reduce PDF File Size Online | itsmypdf',
-    description: 'Reduce PDF file size without losing quality. Free online PDF compressor. No file upload required - process locally.',
+    title: 'Compress PDF Online Free – Reduce PDF File Size Without Watermarks | itsmypdf',
+    description: 'Compress PDF online for free. Reduce PDF file size for email, uploads, and sharing with honest size estimates, no signup, and no watermarks.',
     keywords: 'compress pdf, reduce pdf size, pdf compressor, shrink pdf, optimize pdf size',
-    h1: 'Compress PDF Files - Reduce Size Online Free'
+    h1: 'Compress PDF Online Free'
   },
   'pdf-to-jpg': {
     title: 'PDF to JPG Converter - Convert PDF to Images Free | itsmypdf',

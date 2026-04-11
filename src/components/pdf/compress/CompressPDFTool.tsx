@@ -1,11 +1,11 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Plus, ArrowRight, Settings, CheckCircle, Zap, X, AlertTriangle, Loader2 } from 'lucide-react';
+import { Plus, ArrowRight, Settings, CheckCircle, X, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { compressPdf } from '@/utils/pdfProcessor';
-import { PdfUploadHero } from '../shared/PdfUploadHero';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { MobileLayout } from '../shared/MobileLayout';
 import { ToolCTAs } from '../shared/ToolCTAs';
+import { CompressPdfEmptyState } from './CompressPdfEmptyState';
 import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
 import {
     analyzePdfCompression,
@@ -356,13 +356,12 @@ const CompressPDFTool: React.FC = () => {
 
     if (pdfFiles.length === 0) {
         return (
-            <PdfUploadHero
+            <CompressPdfEmptyState
                 onFilesSelect={handleFileSelect}
                 title={hero.title}
                 description={hero.description}
-                accept={hero.accept}
-                multiple={hero.multiple}
-                icon={<Zap className="h-6 w-6 mr-3" />}
+                accept={hero.accept ?? 'application/pdf'}
+                multiple={hero.multiple ?? true}
             />
         );
     }

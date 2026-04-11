@@ -6,9 +6,10 @@ interface Props {
   noindex?: boolean;
   ogImage?: string;
   ogType?: 'website' | 'article';
+  structuredData?: Array<Record<string, unknown>>;
 }
 
-const { title, description = '', canonical, noindex = false, ogImage = '/og-image.jpg', ogType = 'website' } = Astro.props;
+const { title, description = '', canonical, noindex = false, ogImage = '/og-image.jpg', ogType = 'website', structuredData: extraStructuredData = [] } = Astro.props;
 const site = Astro.site ?? new URL(Astro.url.origin);
 const normalizePath = (value: string) => {
   if (value === '/') return '/';
@@ -36,7 +37,8 @@ const structuredData = JSON.stringify([
     alternateName: 'itsmypdf',
     url: new URL('/', site).href,
     publisher: { '@id': `${new URL('/', site).href}#organization` }
-  }
+  },
+  ...extraStructuredData
 ]);
 ---
 <meta charset="utf-8" />

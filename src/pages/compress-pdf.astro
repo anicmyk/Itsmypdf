@@ -1,17 +1,47 @@
 ---
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import CompressPDFTool from '@/components/pdf/compress/CompressPDFTool';
-import ToolShell from '@/components/ToolShell.astro';
 import { ALL_TOOLS_SEO } from '@/lib/seoData';
 import { getOgImagePath } from '@/lib/ogImages';
+import { COMPRESS_PDF_FAQ } from '@/lib/compressPdfPageData';
 
 const toolId = 'compress-pdf';
 const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://itsmypdf.com/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Compress PDF',
+        item: 'https://itsmypdf.com/compress-pdf'
+      }
+    ]
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: COMPRESS_PDF_FAQ.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer
+      }
+    }))
+  }
+];
 ---
-<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/compress-pdf'} ogImage={getOgImagePath(toolId)}>
-  <CompressPDFTool client:only="react">
-    <ToolShell slot="fallback" toolId={toolId} />
-  </CompressPDFTool>
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/compress-pdf'} ogImage={getOgImagePath(toolId)} structuredData={structuredData}>
+  <CompressPDFTool client:load />
 </ToolLayout>
 
 
