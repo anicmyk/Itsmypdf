@@ -20,7 +20,7 @@ export const COMPRESS_PDF_OVERVIEW = {
     },
     {
       title: 'Honest about limits',
-      body: 'Text-heavy or already-optimized PDFs often shrink only a little, and exact targets like 500KB or 1MB are not always realistic.'
+      body: 'Text-heavy or already-optimized PDFs often shrink only a little, so the result may stay close to the original.'
     }
   ]
 };
@@ -32,9 +32,9 @@ export const COMPRESS_PDF_EXPECTATIONS = [
 ];
 
 export const COMPRESS_PDF_TARGET_NOTE = {
-  title: 'Can a PDF be compressed to 500KB or 1MB?',
+  title: 'What affects the result?',
   body:
-    'Sometimes, yes. Large image-based PDFs often have enough room to shrink. Text-heavy or already optimized files may not reach those exact sizes, and the estimate on the page is there to show what is realistic before you start.'
+    'Image-heavy PDFs usually have more room to shrink. Text-heavy or already optimized files often stay closer to the original size, which is why the page shows a realistic estimate before you start.'
 };
 
 export const COMPRESS_PDF_BEST_RESULTS = [
