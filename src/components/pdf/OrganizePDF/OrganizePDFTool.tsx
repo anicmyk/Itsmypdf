@@ -681,9 +681,12 @@ const OrganizeTool: React.FC = () => {
 
     return (
         <>
-            <div className={`flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-auto ${files.length > 0 ? 'hidden' : ''}`}>
+            <div
+                className={`flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-scroll ${files.length > 0 ? 'hidden' : ''}`}
+                style={{ scrollbarGutter: 'stable' }}
+            >
                 {/* Tool container taking up most of the viewport */}
-                <div className="flex flex-col justify-center items-center w-full min-h-[65vh] sm:min-h-[70vh] flex-shrink-0">
+                <div className="flex-grow flex items-center justify-center p-4 md:p-8">
                     <PdfUploadHero
                         onFilesSelect={handleFilesSelect}
                         title={hero.title}

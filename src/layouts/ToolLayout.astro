@@ -29,5 +29,36 @@ const { title, description = 'Free privacy-first PDF tools.', canonical, noindex
       </main>
     </div>
     <ToasterMount client:load />
+    <script is:inline>
+      const resetToolScroll = () => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
+        const scope = document.querySelector('.tool-layout .tool-slot');
+        if (!scope) return;
+
+        const nodes = scope.querySelectorAll('*');
+        nodes.forEach((node) => {
+          if (!(node instanceof HTMLElement)) return;
+
+          const style = window.getComputedStyle(node);
+          const canScrollY = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight;
+
+          if (canScrollY) {
+            node.scrollTop = 0;
+          }
+        });
+      };
+
+      const scheduleReset = () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resetToolScroll);
+        });
+      };
+
+      window.history.scrollRestoration = 'manual';
+      document.addEventListener('astro:page-load', scheduleReset);
+      window.addEventListener('load', scheduleReset);
+      window.addEventListener('pageshow', scheduleReset);
+    </script>
   </body>
 </html>

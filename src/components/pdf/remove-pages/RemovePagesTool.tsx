@@ -215,9 +215,12 @@ const RemovePagesTool: React.FC = () => {
 
   return (
     <>
-      <div className={`flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-auto ${activeFile ? 'hidden' : ''}`}>
+      <div
+        className={`flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-scroll ${activeFile ? 'hidden' : ''}`}
+        style={{ scrollbarGutter: 'stable' }}
+      >
         {/* Tool container taking up most of the viewport */}
-        <div className="flex flex-col justify-center items-center w-full min-h-[65vh] sm:min-h-[70vh] flex-shrink-0">
+        <div className="flex-grow flex items-center justify-center p-4 md:p-8">
           <PdfUploadHero
             onFilesSelect={(files) => {
               if (files.length > 0 && files[0].type === 'application/pdf') {

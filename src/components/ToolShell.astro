@@ -2,6 +2,7 @@
 import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
 import ToolLongform from '@/components/ToolLongform.astro';
 import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
+import { TOOL_LONGFORM } from '@/lib/toolLongform';
 
 interface Props {
   title?: string;
@@ -20,8 +21,12 @@ const resolvedMultiple = hero?.multiple ?? multiple;
 const resolvedButtonLabel = hero?.buttonLabel;
 const resolvedDropLabel = hero?.dropLabel;
 const noop = () => {};
+const hasLongform = Boolean(toolId && TOOL_LONGFORM[toolId]);
 ---
-<div class="flex flex-col h-full w-full bg-gray-50 font-sans overflow-y-auto">
+<div
+  class={`flex flex-col h-full w-full bg-gray-50 font-sans ${hasLongform ? 'overflow-y-scroll' : 'overflow-hidden'}`}
+  style={hasLongform ? 'scrollbar-gutter: stable;' : undefined}
+>
   <div class="flex-grow flex items-center justify-center p-4 md:p-8">
     <PdfUploadHero
       onFilesSelect={noop}
