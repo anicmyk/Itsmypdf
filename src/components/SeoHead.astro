@@ -18,7 +18,7 @@ const normalizePath = (value: string) => {
 const canonicalPath = normalizePath(canonical ?? Astro.url.pathname);
 const canonicalUrl = new URL(canonicalPath, site);
 const ogImageUrl = ogImage ? new URL(ogImage, site) : undefined;
-const sitemapUrl = new URL('/sitemap-index.xml', site).href;
+const sitemapUrl = new URL('/sitemap.xml', site).href;
 const structuredData = JSON.stringify([
   {
     '@context': 'https://schema.org',
