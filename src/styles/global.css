@@ -715,3 +715,78 @@ img {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #2563eb, #4f46e5);
 }
+
+@media (max-width: 640px) {
+  .drop-zone {
+    padding: 24px 16px;
+  }
+
+  .drop-zone-icon {
+    font-size: 40px;
+  }
+
+  .ranges-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .pages-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .page-row {
+    gap: 8px;
+  }
+
+  .page-item {
+    width: 100%;
+    max-width: none;
+  }
+
+  .page-item canvas {
+    height: 130px;
+  }
+
+  .page-card .page-preview {
+    height: 140px;
+  }
+
+  .tab-buttons,
+  .mode-buttons,
+  .extract-mode-buttons {
+    flex-wrap: wrap;
+  }
+
+  .tab-buttons .tab,
+  .mode-buttons button,
+  .extract-mode-btn,
+  .add-range-btn {
+    min-height: 48px;
+  }
+
+  .tab-buttons .tab {
+    flex: 1 1 50%;
+  }
+
+  .tab-buttons .tab:first-child,
+  .tab-buttons .tab:nth-child(2),
+  .tab-buttons .tab:last-child {
+    border-radius: 0;
+  }
+
+  .tab-label {
+    font-size: 12px;
+  }
+
+  .fixed-input,
+  .merge-checkbox {
+    flex-wrap: wrap;
+  }
+
+  .custom-range-item input,
+  .fixed-input input {
+    width: 100%;
+    max-width: 84px;
+  }
+}

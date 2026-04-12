@@ -158,10 +158,10 @@ const ExcelUploadHero: React.FC<{
                                 <FileSpreadsheet className="w-16 h-16 text-brand-blue-400" />
                             </div>
                         </div>
-                        <h2 className="text-4xl font-bold text-white mb-3">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                             Drop Excel file here
                         </h2>
-                        <p className="text-xl text-gray-300">
+                        <p className="text-base sm:text-xl text-gray-300">
                             Release to upload
                         </p>
                     </div>
@@ -169,14 +169,14 @@ const ExcelUploadHero: React.FC<{
             )}
 
             <div className="text-center">
-                <h1 className="text-5xl font-bold text-gray-800">{excelHero.title}</h1>
-                <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">{excelHero.title}</h1>
+                <p className="mt-4 text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
                     {excelHero.description}
                 </p>
                 <div className="mt-10">
                     <button
                         onClick={handleButtonClick}
-                        className="bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center"
+                        className="w-full sm:w-auto bg-brand-blue-600 text-white font-bold py-3.5 sm:py-4 px-6 sm:px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-lg sm:text-xl inline-flex items-center justify-center"
                     >
                         <Plus className="h-6 w-6 mr-3" />
                         {excelHero.buttonLabel ?? 'Select Excel File'}

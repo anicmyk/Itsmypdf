@@ -25,7 +25,7 @@ export const SplitUploadHero: React.FC<SplitUploadHeroProps> = ({
 }) => {
   return (
     <div
-      className="flex-grow flex items-center justify-center p-8"
+      className="flex-grow flex items-center justify-center px-4 py-8 sm:p-8"
       onDragEnter={onFileDragOver}
       onDragLeave={onFileDragLeave}
       onDragOver={onFileDragOver}
@@ -36,13 +36,13 @@ export const SplitUploadHero: React.FC<SplitUploadHeroProps> = ({
           }`}
       >
         <div
-          className={`p-10 rounded-xl transition-all duration-300 ${dragOver ? 'bg-brand-blue-50 ring-4 ring-brand-blue-200' : ''
+          className={`p-6 sm:p-10 rounded-xl transition-all duration-300 ${dragOver ? 'bg-brand-blue-50 ring-4 ring-brand-blue-200' : ''
             }`}
         >
-          <h1 className="text-5xl font-bold text-gray-800">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">
             {isExtractMode ? 'Extract PDF pages' : 'Split PDF file'}
           </h1>
-          <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
             {isExtractMode
               ? 'Get a new PDF document with only the desired pages.'
               : 'Separate one page or a whole set for easy conversion into independent PDF files.'}
@@ -57,14 +57,14 @@ export const SplitUploadHero: React.FC<SplitUploadHeroProps> = ({
             />
             <button
               onClick={onDropZoneClick}
-              className="bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center"
+              className="w-full sm:w-auto bg-brand-blue-600 text-white font-bold py-3.5 sm:py-4 px-6 sm:px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-lg sm:text-xl inline-flex items-center justify-center"
               aria-label="Select PDF file to split"
             >
               <Plus className="h-6 w-6 mr-3" />
               Select PDF file
             </button>
           </div>
-          <p className="mt-4 text-gray-500">or drop PDF here</p>
+          <p className="mt-4 text-sm sm:text-base text-gray-500">or drop PDF here</p>
           <ToolCTAs variant="hero" />
         </div>
       </div>

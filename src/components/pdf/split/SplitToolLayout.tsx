@@ -470,7 +470,7 @@ export const SplitToolLayout: React.FC<SplitToolLayoutProps> = ({
               <PdfPageCard
                 pageNumber={1}
                 pdfDoc={pdfDoc}
-                className="w-40 h-56"
+                className="w-full max-w-40 aspect-[10/14]"
               />
               <span className="text-sm font-medium text-gray-600">1</span>
             </div>

@@ -21,7 +21,7 @@ export const RangePreview: React.FC<RangePreviewProps> = ({
   onViewRange,
 }) => {
   return (
-    <div className="flex flex-wrap justify-center items-start gap-8">
+    <div className="flex flex-wrap justify-center items-start gap-6 sm:gap-8">
       {mode === 'custom' &&
         customRanges.map((range, index) => {
           const pageCount = range.to >= range.from ? range.to - range.from + 1 : 0;
@@ -39,7 +39,7 @@ export const RangePreview: React.FC<RangePreviewProps> = ({
                   <div className="flex items-start justify-center gap-6">
                     {pageCount > 0 && (
                       <div className="group flex flex-col items-center space-y-2 flex-shrink-0">
-                        <div className="w-40 h-56">
+                        <div className="w-full max-w-40">
                           <PdfPageCard
                             pageNumber={range.from}
                             pdfDoc={pdfDoc}
@@ -66,7 +66,7 @@ export const RangePreview: React.FC<RangePreviewProps> = ({
                     )}
                     {pageCount > 1 && (
                       <div className="group flex flex-col items-center space-y-2 flex-shrink-0">
-                        <div className="w-40 h-56">
+                        <div className="w-full max-w-40">
                           <PdfPageCard
                             pageNumber={range.to}
                             pdfDoc={pdfDoc}
@@ -99,11 +99,11 @@ export const RangePreview: React.FC<RangePreviewProps> = ({
             return (
               <div key={i} className="flex flex-col" data-range-section>
                 <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">Range {i + 1}</h3>
-                <div className="flex items-start justify-center p-6 bg-white border-2 border-dashed border-gray-300 rounded-xl min-h-[20rem]">
+                <div className="flex items-start justify-center p-4 sm:p-6 bg-white border-2 border-dashed border-gray-300 rounded-xl min-h-[20rem]">
                   <div className="flex items-start justify-center gap-6">
                     {pageCount > 0 && (
                       <div className="group flex flex-col items-center space-y-2 flex-shrink-0">
-                        <div className="w-40 h-56">
+                        <div className="w-full max-w-40">
                           <PdfPageCard
                             pageNumber={start}
                             pdfDoc={pdfDoc}
@@ -130,7 +130,7 @@ export const RangePreview: React.FC<RangePreviewProps> = ({
                     )}
                     {pageCount > 1 && (
                       <div className="group flex flex-col items-center space-y-2 flex-shrink-0">
-                        <div className="w-40 h-56">
+                        <div className="w-full max-w-40">
                           <PdfPageCard
                             pageNumber={end}
                             pdfDoc={pdfDoc}

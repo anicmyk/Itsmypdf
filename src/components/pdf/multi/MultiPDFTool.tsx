@@ -390,7 +390,7 @@ const MultiPDFTool: React.FC = () => {
                     if (isBlank) {
                       return (
                         <div key={p.id} className="group relative flex-shrink-0 flex justify-center">
-                          <div onClick={() => toggleSelect(idx)} className={`group relative w-40 h-56 bg-white border rounded-lg border-gray-300 overflow-hidden shadow-sm flex items-center justify-center p-2 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${p.isSelected ? 'ring-2 ring-brand-blue-500 border-brand-blue-500' : ''}`}>
+                          <div onClick={() => toggleSelect(idx)} className={`group relative w-full max-w-40 aspect-[10/14] bg-white border rounded-lg border-gray-300 overflow-hidden shadow-sm flex items-center justify-center p-2 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${p.isSelected ? 'ring-2 ring-brand-blue-500 border-brand-blue-500' : ''}`}>
                             <div className="w-full h-full bg-gray-50 rounded-[4px] flex items-center justify-center text-gray-400 text-sm italic">Blank Page</div>
                             {/* Copy overlays from PdfPageCard style or reusing them similarly */}
                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-1 bg-white/80 backdrop-blur-sm rounded-md p-1 ring-1 ring-gray-200">

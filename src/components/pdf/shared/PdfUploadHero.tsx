@@ -113,8 +113,8 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
     return (
         <div
             className={compact
-                ? 'w-full flex items-start justify-center px-4 py-8 md:px-6 md:py-10 relative'
-                : 'flex-grow h-full flex items-center justify-center p-8 relative'}
+                ? 'w-full flex items-start justify-center px-4 py-8 sm:px-6 sm:py-10 relative'
+                : 'flex-grow h-full flex items-center justify-center px-4 py-8 sm:p-8 relative'}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
@@ -129,10 +129,10 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
                                 <Plus className="w-16 h-16 text-brand-blue-400" />
                             </div>
                         </div>
-                        <h2 className="text-4xl font-bold text-white mb-3">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                             Drop {multiple ? 'PDFs' : 'PDF'} here
                         </h2>
-                        <p className="text-xl text-gray-300">
+                        <p className="text-base sm:text-xl text-gray-300">
                             Release to upload
                         </p>
                     </div>
@@ -140,16 +140,16 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
             )}
 
             <div className={compact ? 'w-full max-w-3xl text-center' : 'text-center'}>
-                <h1 className={compact ? 'text-3xl md:text-4xl font-bold text-gray-800' : 'text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800'}>{title}</h1>
-                <p className={compact ? 'mt-3 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto' : 'mt-4 text-xl text-gray-600 max-w-2xl mx-auto'}>
+                <h1 className={compact ? 'text-3xl sm:text-4xl font-bold text-gray-800' : 'text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800'}>{title}</h1>
+                <p className={compact ? 'mt-3 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto' : 'mt-4 text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto'}>
                     {description}
                 </p>
-                <div className={compact ? 'mt-8' : 'mt-10'}>
+                <div className={compact ? 'mt-8' : 'mt-8 sm:mt-10'}>
                     <button
                         onClick={handleButtonClick}
                         className={compact
-                            ? 'bg-brand-blue-600 text-white font-bold py-3.5 px-8 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-sm hover:shadow-md text-lg inline-flex items-center justify-center'
-                            : 'bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center'}
+                            ? 'w-full sm:w-auto bg-brand-blue-600 text-white font-bold py-3.5 px-6 sm:px-8 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-sm hover:shadow-md text-base sm:text-lg inline-flex items-center justify-center'
+                            : 'w-full sm:w-auto bg-brand-blue-600 text-white font-bold py-3.5 sm:py-4 px-6 sm:px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-lg sm:text-xl inline-flex items-center justify-center'}
                     >
                         <Plus className="h-6 w-6 mr-3" />
                         {buttonLabel ?? (multiple ? 'Select PDF Files' : 'Select PDF File')}
@@ -163,14 +163,14 @@ export const PdfUploadHero: React.FC<PdfUploadHeroProps> = ({
                         multiple={multiple}
                     />
                 </div>
-                <p className="mt-4 text-gray-500">{dropLabel ?? `or drop ${multiple ? 'PDFs' : 'PDF'} here`}</p>
+                <p className="mt-4 text-sm sm:text-base text-gray-500">{dropLabel ?? `or drop ${multiple ? 'PDFs' : 'PDF'} here`}</p>
 
                 {trustPoints && trustPoints.length > 0 && (
                     <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
                         {trustPoints.map((point) => (
                             <span
                                 key={point}
-                                className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm"
                             >
                                 <CheckCircle2 className="h-3.5 w-3.5 text-brand-blue-600" />
                                 {point}

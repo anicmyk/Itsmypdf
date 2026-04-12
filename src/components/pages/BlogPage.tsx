@@ -60,11 +60,11 @@ export default function BlogPage() {
             <div className="min-h-screen bg-white">
                 {/* Hero */}
                 <div className="bg-gray-50 border-b border-gray-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 text-center">
-                        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center">
+                        <h1 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-3">
                             itsmy<span className="text-blue-600">pdf</span> Blog
                         </h1>
-                        <p className="text-gray-600 text-base sm:text-lg max-w-lg mx-auto">
+                        <p className="text-gray-600 text-sm sm:text-lg max-w-lg mx-auto">
                             Guides and tips for working with PDFs &mdash; privately and without uploads.
                         </p>
                     </div>
@@ -72,7 +72,7 @@ export default function BlogPage() {
 
                 {/* Main content */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-                    <div className="flex flex-col lg:flex-row gap-10">
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
 
                         {/* ─── Posts column ─── */}
                         <div className="flex-1 min-w-0">
@@ -102,7 +102,7 @@ export default function BlogPage() {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                                     {filtered.map((post) => (
                                         <a
                                             key={post.slug}
@@ -165,7 +165,7 @@ export default function BlogPage() {
 
                         {/* ─── Sidebar ─── */}
                         <aside className="w-full lg:w-64 shrink-0">
-                            <div className="lg:sticky lg:top-24 space-y-8">
+                            <div className="lg:sticky lg:top-24 space-y-6 lg:space-y-8">
                                 {/* Categories */}
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-900 mb-3">Categories</h3>

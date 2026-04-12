@@ -70,24 +70,21 @@ export default function NavDropdown({
 
       {isOpen && (
         <div
-          className="absolute top-full left-1/2 mt-2 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden z-[9999] animate-dropdown-enter"
-          style={{
-            maxWidth: '95vw',
-          }}
+          className="absolute top-full left-1/2 mt-2 w-[min(92vw,56rem)] -translate-x-1/2 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden z-[9999] animate-dropdown-enter max-h-[calc(100vh-5rem)] overflow-y-auto"
         >
           <div className="p-4">
             {showCategories ? (
-              <div className="space-y-4" style={{ minWidth: '650px', maxWidth: '800px' }}>
+              <div className="space-y-4">
                 {CATEGORIES.filter((cat) => cat.id !== 'all').map((category) => {
                   const categoryItems = categorizedItems?.[category.id] || [];
                   if (categoryItems.length === 0) return null;
 
                   return (
                     <div key={category.id}>
-                      <h3 className="text-xs font-semibold text-gray-700 mb-2 px-1 uppercase tracking-wide">
+                      <h3 className="text-sm font-semibold text-gray-700 mb-2 px-1">
                         {category.name}
                       </h3>
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                         {categoryItems.map((item) => {
                           const IconComponent = (icons as any)[item.icon] || icons.File;
 
@@ -102,10 +99,10 @@ export default function NavDropdown({
                                 <IconComponent className="w-4 h-4 text-blue-600" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 text-xs mb-0.5 group-hover:text-blue-600 transition-colors leading-tight">
+                                <div className="font-medium text-gray-900 text-sm mb-0.5 group-hover:text-blue-600 transition-colors leading-tight">
                                   {item.name}
                                 </div>
-                                <div className="text-[10px] text-gray-500 line-clamp-2 leading-tight">
+                                <div className="text-xs text-gray-500 line-clamp-2 leading-tight">
                                   {item.description}
                                 </div>
                               </div>
@@ -118,7 +115,7 @@ export default function NavDropdown({
                 })}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2" style={{ minWidth: '450px', maxWidth: '550px' }}>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" >
                 {items.map((item) => {
                   const IconComponent = (icons as any)[item.icon] || icons.File;
 
@@ -133,10 +130,10 @@ export default function NavDropdown({
                         <IconComponent className="w-4 h-4 text-blue-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-gray-900 text-xs mb-0.5 group-hover:text-blue-600 transition-colors leading-tight">
+                        <div className="font-medium text-gray-900 text-sm mb-0.5 group-hover:text-blue-600 transition-colors leading-tight">
                           {item.name}
                         </div>
-                        <div className="text-[10px] text-gray-500 line-clamp-2 leading-tight">{item.description}</div>
+                        <div className="text-xs text-gray-500 line-clamp-2 leading-tight">{item.description}</div>
                       </div>
                     </a>
                   );

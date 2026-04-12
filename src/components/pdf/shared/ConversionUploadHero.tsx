@@ -31,16 +31,16 @@ export const ConversionUploadHero: React.FC<ConversionUploadHeroProps> = ({
 }) => {
     return (
         <div
-            className="flex-grow flex items-center justify-center p-8"
+            className="flex-grow flex items-center justify-center px-4 py-8 sm:p-8"
             onDragEnter={onFileDragOver}
             onDragLeave={onFileDragLeave}
             onDragOver={onFileDragOver}
             onDrop={onFileDrop}
         >
             <div className={`text-center transition-transform duration-300 ${dragOver ? 'scale-105' : ''}`}>
-                <div className={`p-10 rounded-xl transition-all duration-300 ${dragOver ? 'bg-brand-blue-50 ring-4 ring-brand-blue-200' : ''}`}>
-                    <h1 className="text-5xl font-bold text-gray-800">{title}</h1>
-                    <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+                <div className={`p-6 sm:p-10 rounded-xl transition-all duration-300 ${dragOver ? 'bg-brand-blue-50 ring-4 ring-brand-blue-200' : ''}`}>
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">{title}</h1>
+                    <p className="mt-4 text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
                         {description}
                     </p>
                     <div className="mt-10">
@@ -54,14 +54,14 @@ export const ConversionUploadHero: React.FC<ConversionUploadHeroProps> = ({
                         />
                         <button
                             onClick={onDropZoneClick}
-                            className="bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center"
+                            className="w-full sm:w-auto bg-brand-blue-600 text-white font-bold py-3.5 sm:py-4 px-6 sm:px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-lg sm:text-xl inline-flex items-center justify-center"
                             aria-label={buttonText}
                         >
                             <Plus className="h-6 w-6 mr-3" />
                             {buttonText}
                         </button>
                     </div>
-                    <p className="mt-4 text-gray-500">or drop files here</p>
+                    <p className="mt-4 text-sm sm:text-base text-gray-500">or drop files here</p>
                     <ToolCTAs variant="hero" />
                 </div>
             </div>

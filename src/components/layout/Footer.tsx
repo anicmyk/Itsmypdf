@@ -41,8 +41,8 @@ const socialLinks = [
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 xl:grid-cols-4">
           <div className="md:col-span-1">
             <h3 className="text-white font-bold text-xl mb-4">itsmypdf</h3>
             <p className="text-sm text-gray-400">Professional PDF tools. All files processed locally.</p>
@@ -107,7 +107,7 @@ export default function Footer() {
 
           <div>
             <h4 className="text-white font-semibold mb-4">Connect</h4>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href="mailto:contact@itsmypdf.com"
                 aria-label="Email us"

@@ -209,7 +209,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ color, onChange }) => {
                 <input type="text" value={hexInput} onChange={handleHexChange} className="flex-1 px-2 py-1 border rounded-md text-sm" />
             </div>
 
-            <div className="grid grid-cols-10 gap-1">
+  <div className="grid grid-cols-5 gap-1 sm:grid-cols-10">
                 {PRESET_COLORS.map(c => (
                     <button key={c} onClick={() => onChange(c)} className="w-full aspect-square rounded-sm border" style={{ backgroundColor: c }} />
                 ))}
@@ -230,7 +230,7 @@ const PositionGrid: React.FC<{ value: PageNumberPosition, onChange: (pos: PageNu
         'bottom-left', 'bottom-center', 'bottom-right'
     ];
     return (
-        <div className="grid grid-cols-3 gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+  <div className="grid grid-cols-1 gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200 sm:grid-cols-3">
             {positions.map(pos => (
                 <button
                     key={pos}
@@ -394,7 +394,7 @@ const PageNumberControls: React.FC<{
             <div className="w-full h-px bg-gray-100 my-2"></div>
 
             {/* Position and Opacity - Exact copy from watermark */}
-            <div className="grid grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                 <div>
                     <Label>Position</Label>
                     <PositionGrid
@@ -584,7 +584,7 @@ const PageNumberModalPanel: React.FC<PageNumberModalPanelProps> = ({
                 </div>
 
                 {/* Position and Opacity */}
-                <div className="grid grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                     <div>
                         <Label>Position</Label>
                         <PositionGrid
@@ -1302,14 +1302,14 @@ const PageNumberUploadHero: React.FC<PageNumberUploadHeroProps> = ({ onFilesSele
                 className={`text-center transition-transform duration-300 ${isDragging ? 'scale-105' : ''}`}
             >
                 <div className={`p-10 rounded-xl ${isDragging ? 'bg-brand-blue-50 ring-4 ring-brand-blue-200' : ''}`}>
-                    <h1 className="text-5xl font-bold text-gray-800">{pageNumberHero.title}</h1>
-                    <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">{pageNumberHero.title}</h1>
+                    <p className="mt-4 text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
                         {pageNumberHero.description}
                     </p>
                     <div className="mt-10">
                         <button
                             onClick={handleButtonClick}
-                            className="bg-brand-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-xl inline-flex items-center justify-center"
+                            className="w-full sm:w-auto bg-brand-blue-600 text-white font-bold py-3.5 sm:py-4 px-6 sm:px-10 rounded-lg hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl text-lg sm:text-xl inline-flex items-center justify-center"
                             aria-label="Select PDF file to add page numbers"
                         >
                             <Plus className="h-6 w-6 mr-3" />

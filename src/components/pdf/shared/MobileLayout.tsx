@@ -149,7 +149,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
 
             {/* Fixed bottom bar - visible when both panels CLOSED */}
             <div
-                className={`md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white border-t border-gray-200 z-30 transition-all duration-300 ${settingsOpen || pagesOpen ? 'opacity-0 pointer-events-none translate-y-2' : 'opacity-100 translate-y-0'
+                className={`md:hidden fixed bottom-0 left-0 right-0 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-white border-t border-gray-200 z-30 transition-all duration-300 ${settingsOpen || pagesOpen ? 'opacity-0 pointer-events-none translate-y-2' : 'opacity-100 translate-y-0'
                     }`}
             >
                 {/* Optional content above action button (e.g., page navigation) */}
@@ -198,7 +198,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             {pagesPanel && (
                 <button
                     onClick={() => setPagesOpen(true)}
-                    className={`md:hidden fixed left-4 w-12 h-12 bg-brand-blue-600 text-white rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all duration-300 z-30 flex items-center justify-center ${pagesOpen || settingsOpen ? 'bottom-4 opacity-0 pointer-events-none' : 'bottom-32 opacity-100'
+                    className={`md:hidden fixed left-4 w-12 h-12 bg-brand-blue-600 text-white rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all duration-300 z-30 flex items-center justify-center ${pagesOpen || settingsOpen ? 'bottom-4 opacity-0 pointer-events-none' : 'bottom-[8rem] opacity-100'
                         }`}
                     aria-label="Open pages"
                 >
@@ -209,7 +209,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             {/* Floating Settings button - RIGHT side (always visible on mobile) */}
             <button
                 onClick={() => setSettingsOpen(true)}
-                className={`md:hidden fixed right-4 w-12 h-12 bg-brand-blue-600 text-white rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all duration-300 z-30 flex items-center justify-center ${settingsOpen || pagesOpen ? 'bottom-4 opacity-0 pointer-events-none' : 'bottom-32 opacity-100'
+                className={`md:hidden fixed right-4 w-12 h-12 bg-brand-blue-600 text-white rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all duration-300 z-30 flex items-center justify-center ${settingsOpen || pagesOpen ? 'bottom-4 opacity-0 pointer-events-none' : 'bottom-[8rem] opacity-100'
                     }`}
                 aria-label="Open settings"
             >

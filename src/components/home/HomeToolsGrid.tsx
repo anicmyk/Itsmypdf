@@ -27,12 +27,12 @@ export default function HomeToolsGrid() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-0 sm:px-2">
         {filteredTools.map((tool) => {
           const IconComponent = (Icons as any)[tool.icon] || Icons.FileText;
           return (
             <a key={tool.id} href={`/${tool.id}`}>
-              <div className="bg-white rounded-lg p-6 shadow-sm transition border border-gray-200 group min-h-[140px] flex flex-col justify-between hover:shadow-md" style={{ minWidth: '286px' }}>
+              <div className="bg-white rounded-lg p-5 sm:p-6 shadow-sm transition border border-gray-200 group min-h-[140px] flex h-full flex-col justify-between hover:shadow-md">
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-3">
@@ -46,7 +46,7 @@ export default function HomeToolsGrid() {
                 </div>
                 <div className="flex items-center text-blue-600 text-sm font-medium group-hover:text-blue-700">
                   <span>Use tool</span>
-                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="h-4 w-4 ml-1 transition-transform" />
                 </div>
               </div>
             </a>

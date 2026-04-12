@@ -4,25 +4,25 @@ export default function AboutPage() {
   return (
       
 
-      <div className="min-h-screen bg-white py-12">
+      <div className="min-h-screen bg-white py-10 sm:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">About itsmypdf</h1>
-            <p className="text-xl text-gray-600">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">About itsmypdf</h1>
+            <p className="text-base sm:text-xl text-gray-600">
               Making PDF processing simple, secure, and accessible to everyone
             </p>
           </div>
 
           <div className="prose prose-lg max-w-none">
-            <div className="bg-blue-50 rounded-lg p-8 mb-8">
+            <div className="bg-blue-50 rounded-lg p-6 sm:p-8 mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
               <p className="text-gray-700">
                 We believe that PDF processing should be free, secure, and accessible to everyone. That's why we've created a comprehensive platform of professional PDF tools that work entirely in your browser - no uploads, no registration, no tracking.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mb-12">
+              <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6">
                 <Shield className="h-8 w-8 text-blue-600 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">100% Private & Secure</h3>
                 <p className="text-gray-600">
@@ -30,7 +30,7 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6">
                 <Zap className="h-8 w-8 text-blue-600 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Instant Processing</h3>
                 <p className="text-gray-600">
@@ -38,7 +38,7 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6">
                 <FileText className="h-8 w-8 text-blue-600 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Professional PDF Tools</h3>
                 <p className="text-gray-600">
@@ -46,7 +46,7 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="bg-white border border-gray-200 rounded-lg p-5 sm:p-6">
                 <Users className="h-8 w-8 text-blue-600 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Completely Free</h3>
                 <p className="text-gray-600">

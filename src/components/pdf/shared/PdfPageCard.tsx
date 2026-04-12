@@ -40,7 +40,7 @@ export const PdfPageCard: React.FC<PdfPageCardProps> = ({
     // Wrapper Styles - use flexible sizing if aspectRatio is provided (for image-to-PDF tools)
     const hasCustomAspectRatio = props.style?.aspectRatio;
     const wrapperClass = `
-        relative ${hasCustomAspectRatio ? 'w-40' : 'w-40 h-56'} bg-white border rounded-lg shadow-sm flex items-center justify-center p-2 transition-all duration-200 will-change-transform
+        relative ${hasCustomAspectRatio ? 'w-full max-w-40' : 'w-full max-w-40 aspect-[10/14]'} bg-white border rounded-lg shadow-sm flex items-center justify-center p-2 transition-all duration-200 will-change-transform
         ${onClick ? 'cursor-pointer group-hover:shadow-lg group-hover:-translate-y-1 group-hover:border-brand-blue-300' : ''}
         ${isSelected ? 'border-brand-blue-500 border-2' : 'border-gray-300 hover:border-gray-400'}
         ${className}

@@ -456,7 +456,7 @@ const RotatePDFTool: React.FC = () => {
                 ))}
 
                 <div
-                  className="w-40 h-56 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-brand-blue-400 hover:text-brand-blue-500 hover:bg-white transition-all cursor-pointer group bg-gray-50/50"
+                  className="w-full max-w-40 aspect-[10/14] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-brand-blue-400 hover:text-brand-blue-500 hover:bg-white transition-all cursor-pointer group bg-gray-50/50"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <div className="p-3 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform mb-3">

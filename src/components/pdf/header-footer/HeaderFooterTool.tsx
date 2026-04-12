@@ -161,7 +161,7 @@ const ColorPicker: React.FC<{ color: string; onChange: (color: string) => void }
                 <div className="w-10 h-10 rounded-md border" style={{ backgroundColor: `rgba(${hslaToRgba(hsla.h, hsla.s, hsla.l, hsla.a).r}, ${hslaToRgba(hsla.h, hsla.s, hsla.l, hsla.a).g}, ${hslaToRgba(hsla.h, hsla.s, hsla.l, hsla.a).b}, ${hsla.a})` }} />
                 <input type="text" value={hexInput} onChange={handleHexChange} className="flex-1 px-2 py-1 border rounded-md text-sm" />
             </div>
-            <div className="grid grid-cols-10 gap-1">
+  <div className="grid grid-cols-5 gap-1 sm:grid-cols-10">
                 {PRESET_COLORS.map(c => (<button key={c} onClick={() => onChange(c)} className="w-full aspect-square rounded-sm border" style={{ backgroundColor: c }} />))}
             </div>
         </div>
@@ -189,7 +189,7 @@ const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const PositionGrid: React.FC<{ value: HeaderFooterPosition, onChange: (pos: HeaderFooterPosition) => void, disabled?: boolean }> = React.memo(({ value, onChange, disabled = false }) => {
     const positions: HeaderFooterPosition[] = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
     return (
-        <div className="grid grid-cols-3 gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+  <div className="grid grid-cols-1 gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200 sm:grid-cols-3">
             {positions.map(pos => (
                 <button key={pos} onClick={() => { if (!disabled) onChange(pos); }} disabled={disabled}
                     className={`h-8 w-8 rounded flex items-center justify-center transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-blue-500 ${disabled ? 'opacity-30 cursor-not-allowed' : ''} ${value === pos ? 'bg-brand-blue-600 shadow-md transform scale-105' : 'bg-white border border-gray-200 hover:border-gray-300'}`}
@@ -309,7 +309,7 @@ const HeaderFooterControls: React.FC<{
             <div className="w-full h-px bg-gray-100 my-2" />
 
             {/* Position & Opacity/Rotation grid (same as watermark) */}
-            <div className="grid grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                 <div>
                     <Label>Position</Label>
                     <PositionGrid value={options.position} onChange={pos => onChange('position', pos)} disabled={options.mosaic} />
