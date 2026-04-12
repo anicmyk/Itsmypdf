@@ -1,17 +1,54 @@
 ---
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import OrganizePDFTool from '@/components/pdf/OrganizePDF/OrganizePDFTool';
-import ToolShell from '@/components/ToolShell.astro';
 import { ALL_TOOLS_SEO } from '@/lib/seoData';
 import { getOgImagePath } from '@/lib/ogImages';
+import { ORGANIZE_PDF_FAQ } from '@/lib/organizePdfPageData';
 
 const toolId = 'organize-pdf';
 const seo = ALL_TOOLS_SEO[toolId as keyof typeof ALL_TOOLS_SEO];
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://itsmypdf.com/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Organize PDF',
+        item: 'https://itsmypdf.com/organize-pdf'
+      }
+    ]
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: seo?.h1 ?? 'Organize PDF Pages Online Free',
+    url: 'https://itsmypdf.com/organize-pdf',
+    description: seo?.description ?? 'Organize PDF pages online for free.'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: ORGANIZE_PDF_FAQ.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer
+      }
+    }))
+  }
+];
 ---
-<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/organize-pdf'} ogImage={getOgImagePath(toolId)}>
-  <OrganizePDFTool client:only="react">
-    <ToolShell slot="fallback" toolId={toolId} />
-  </OrganizePDFTool>
+<ToolLayout title={seo?.title ?? 'itsmypdf Tool'} description={seo?.description ?? 'PDF tool'} canonical={'/organize-pdf'} ogImage={getOgImagePath(toolId)} structuredData={structuredData}>
+  <OrganizePDFTool client:load />
 </ToolLayout>
 
 

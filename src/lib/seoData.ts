@@ -24,10 +24,10 @@ export const ALL_TOOLS_SEO = {
     h1: 'Delete & Remove PDF Pages Online for Free'
   },
   'organize-pdf': {
-    title: 'Rearrange, Reorder & Organize PDF Pages: No Sign Up | itsmypdf',
-    description: 'Free online PDF organizer to rearrange, reorder, add, and move pages easily. Secure, instant, no sign-up required, and 100% watermark-free processing.',
+    title: 'Organize PDF Pages Online Free – Rearrange and Reorder PDFs | itsmypdf',
+    description: 'Organize PDF pages online for free. Rearrange, reorder, and move PDF pages with a simple editor, no signup, and no watermark.',
     keywords: 'rearrange pdf, organize pdf, reorder pdf, pdf rearrange, arrange pdf, move pdf pages, add pdf pages, pdf organizer, organize pdf online free no sign up',
-    h1: 'Organize, Rearrange & Reorder PDF Pages for Free'
+    h1: 'Organize PDF Pages Online Free'
   },
   'compress-pdf': {
     title: 'Compress PDF Online Free – Reduce PDF File Size Without Watermarks | itsmypdf',

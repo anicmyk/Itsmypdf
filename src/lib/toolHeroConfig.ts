@@ -27,8 +27,8 @@ export const TOOL_HERO_UI: Record<string, ToolHeroUI> = {
     multiple: false
   },
   'organize-pdf': {
-    title: 'Organize, Rearrange & Reorder PDF Pages for Free',
-    description: 'Easily move, add, sort, and arrange your document directly in your browser. No sign-ups, no watermarks, and completely free.',
+    title: 'Organize PDF Pages Online Free',
+    description: 'Rearrange, reorder, and move PDF pages in your browser. No sign-ups, no watermarks, and visual page previews.',
     accept: 'application/pdf',
     multiple: true
   },

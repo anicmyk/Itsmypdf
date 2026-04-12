@@ -6,9 +6,10 @@ import { LoadingSpinner } from '@/components/pdf/shared/LoadingSpinner';
 import { MobileLayout } from '@/components/pdf/shared/MobileLayout';
 import { ToolCTAs } from '@/components/pdf/shared/ToolCTAs';
 import { PdfUploadHero } from '@/components/pdf/shared/PdfUploadHero';
-import ToolLongformReact from '@/components/pdf/shared/ToolLongformReact';
 import { PdfPageCard } from '../shared/PdfPageCard';
 import { TOOL_HERO_UI } from '@/lib/toolHeroConfig';
+import OrganizePdfSEOContent from './OrganizePdfSEOContent';
+import { ORGANIZE_PDF_TRUST_POINTS } from '@/lib/organizePdfPageData';
 
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
@@ -694,10 +695,11 @@ const OrganizeTool: React.FC = () => {
                         accept={hero.accept}
                         multiple={hero.multiple}
                         icon={<PlusIcon className="h-6 w-6 mr-3" />}
+                        trustPoints={ORGANIZE_PDF_TRUST_POINTS}
                     />
                 </div>
 
-                <ToolLongformReact toolId="organize-pdf" />
+                <OrganizePdfSEOContent />
             </div>
 
             <div className={`flex flex-col h-full bg-gray-50 overflow-hidden font-sans ${files.length === 0 ? 'hidden' : ''}`}>
